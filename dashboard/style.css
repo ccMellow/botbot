@@ -56,6 +56,44 @@ main {
   gap: 1.5rem;
 }
 
+/* ===== Ticker ===== */
+.ticker-section {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ticker-item {
+  flex: 1;
+  min-width: 120px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ticker-name {
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.ticker-price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ticker-change {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 /* ===== Stats grid ===== */
 .stats-grid {
   display: grid;

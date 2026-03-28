@@ -166,3 +166,32 @@ async function refresh() {
 
 refresh();
 setInterval(refresh, REFRESH_MS);
+
+/* ===== Live pris-ticker ===== */
+const TICKER_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+const TICKER_MS = 10 * 1000;
+
+async function refreshTicker() {
+  try {
+    const url = "https://api.binance.com/api/v3/ticker/24hr?symbols=" +
+      encodeURIComponent(JSON.stringify(TICKER_SYMBOLS));
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.statusText);
+    const data = await res.json();
+    data.forEach(t => {
+      const el = document.getElementById("ticker-" + t.symbol);
+      if (!el) return;
+      const pct = parseFloat(t.priceChangePercent);
+      el.querySelector(".ticker-price").textContent =
+        "$" + parseFloat(t.lastPrice).toLocaleString("no-NO", { minimumFractionDigits: 2 });
+      const changeEl = el.querySelector(".ticker-change");
+      changeEl.textContent = (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
+      changeEl.className = "ticker-change " + (pct >= 0 ? "positive" : "negative");
+    });
+  } catch (err) {
+    console.error("Ticker-feil:", err);
+  }
+}
+
+refreshTicker();
+setInterval(refreshTicker, TICKER_MS);
