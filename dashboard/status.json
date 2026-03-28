@@ -1,5 +1,5 @@
 {
-  "updated": "2026-03-28 20:11:15",
+  "updated": "2026-03-28 20:26:20",
   "balances": {
     "BTC": 1.0,
     "USDT": 10000.0,
@@ -8,37 +8,61 @@
   },
   "positions": {
     "BTCUSDT": {
-      "dca_count": 0,
-      "entries": []
+      "dca_count": 1,
+      "avg_entry_price": 66844.17,
+      "take_profit_price": 69517.9368,
+      "stop_loss_price": 65507.2866,
+      "total_coin": 0.00149602,
+      "total_usdt": 100.0,
+      "entries": [
+        {
+          "dca_level": 1,
+          "entry_price": 66844.17,
+          "coin_amount": 0.00149602,
+          "usdt_amount": 100.0
+        }
+      ]
     },
     "ETHUSDT": {
-      "dca_count": 1,
-      "avg_entry_price": 2022.07,
-      "take_profit_price": 2102.9528,
-      "stop_loss_price": 1981.6286,
-      "total_coin": 0.04945427,
-      "total_usdt": 100.0,
+      "dca_count": 2,
+      "avg_entry_price": 2020.405,
+      "take_profit_price": 2101.2212,
+      "stop_loss_price": 1979.9969,
+      "total_coin": 0.09899012,
+      "total_usdt": 200.0,
       "entries": [
         {
           "dca_level": 1,
           "entry_price": 2022.07,
           "coin_amount": 0.04945427,
           "usdt_amount": 100.0
+        },
+        {
+          "dca_level": 2,
+          "entry_price": 2018.74,
+          "coin_amount": 0.04953585,
+          "usdt_amount": 100.0
         }
       ]
     },
     "SOLUSDT": {
-      "dca_count": 1,
-      "avg_entry_price": 83.38,
-      "take_profit_price": 86.7152,
-      "stop_loss_price": 81.7124,
-      "total_coin": 1.19932838,
-      "total_usdt": 100.0,
+      "dca_count": 2,
+      "avg_entry_price": 83.27,
+      "take_profit_price": 86.6008,
+      "stop_loss_price": 81.6046,
+      "total_coin": 2.40182958,
+      "total_usdt": 200.0,
       "entries": [
         {
           "dca_level": 1,
           "entry_price": 83.38,
           "coin_amount": 1.19932838,
+          "usdt_amount": 100.0
+        },
+        {
+          "dca_level": 2,
+          "entry_price": 83.16,
+          "coin_amount": 1.2025012,
           "usdt_amount": 100.0
         }
       ]

@@ -243,6 +243,77 @@ function updatePositionsTable(status) {
     : '<tr><td colspan="7" style="color:var(--muted)">Ingen åpne posisjoner</td></tr>';
 }
 
+/* ===== Indikator-panel ===== */
+function updateIndicators(symbol, ind) {
+  if (!ind) return;
+
+  const rsi = ind.rsi;
+  const buyT = ind.rsi_buy_threshold;
+  const sellT = ind.rsi_sell_threshold;
+
+  // Pris
+  const priceEl = document.getElementById(symbol + "-ind-price");
+  if (priceEl) priceEl.textContent =
+    "$" + ind.price.toLocaleString("no-NO", { minimumFractionDigits: 2 });
+
+  // RSI verdi + farge
+  const rsiEl = document.getElementById(symbol + "-ind-rsi");
+  if (rsiEl) {
+    rsiEl.textContent = rsi.toFixed(1);
+    rsiEl.className = "ind-value " + (rsi <= buyT ? "positive" : rsi >= sellT ? "negative" : "");
+  }
+
+  // RSI gauge fill
+  const fill = document.getElementById(symbol + "-rsi-fill");
+  if (fill) {
+    fill.style.width = rsi + "%";
+    fill.style.background = rsi <= buyT ? "var(--green)" : rsi >= sellT ? "var(--red)" : "var(--blue)";
+  }
+
+  // Kjøp/selg-markeringslinjer
+  const buyLine = document.getElementById(symbol + "-rsi-buy-line");
+  if (buyLine) buyLine.style.left = buyT + "%";
+  const sellLine = document.getElementById(symbol + "-rsi-sell-line");
+  if (sellLine) sellLine.style.left = sellT + "%";
+
+  // Til kjøp
+  const toBuyEl = document.getElementById(symbol + "-ind-to-buy");
+  if (toBuyEl) {
+    if (ind.rsi_to_buy <= 0) {
+      toBuyEl.textContent = "AKTIVT";
+      toBuyEl.className = "ind-value positive";
+    } else {
+      toBuyEl.textContent = "+" + ind.rsi_to_buy.toFixed(1) + " poeng";
+      toBuyEl.className = "ind-value";
+    }
+  }
+
+  // Til salg
+  const toSellEl = document.getElementById(symbol + "-ind-to-sell");
+  if (toSellEl) {
+    if (ind.rsi_to_sell <= 0) {
+      toSellEl.textContent = "AKTIVT";
+      toSellEl.className = "ind-value negative";
+    } else {
+      toSellEl.textContent = ind.rsi_to_sell.toFixed(1) + " poeng";
+      toSellEl.className = "ind-value";
+    }
+  }
+
+  // EMA200
+  const emaEl = document.getElementById(symbol + "-ind-ema200");
+  if (emaEl) {
+    const pct = Math.abs(ind.price_vs_ema200_pct).toFixed(2);
+    if (ind.price_above_ema200) {
+      emaEl.textContent = "▲ +" + pct + "% over";
+      emaEl.className = "ind-value positive";
+    } else {
+      emaEl.textContent = "▼ " + pct + "% under";
+      emaEl.className = "ind-value negative";
+    }
+  }
+}
+
 /* ===== Hoved-refresh ===== */
 async function refresh() {
   try {
@@ -269,6 +340,9 @@ async function refresh() {
       const status = await statusRes.json();
       updateBalances(status);
       updatePositionsTable(status);
+      if (status.indicators) {
+        SYMBOLS.forEach(symbol => updateIndicators(symbol, status.indicators[symbol]));
+      }
     }
 
     document.getElementById("last-updated").textContent =

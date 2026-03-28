@@ -225,6 +225,73 @@ main {
 .coin-eth .coin-label { color: var(--accent); }
 .coin-sol .coin-label { color: var(--green); }
 
+/* ===== Indicator panel ===== */
+.indicator-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ind-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 110px;
+}
+
+.rsi-item {
+  flex-grow: 1;
+  min-width: 180px;
+}
+
+.ind-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.ind-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.rsi-gauge {
+  margin-top: 0.35rem;
+}
+
+.rsi-track {
+  position: relative;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: visible;
+}
+
+.rsi-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease, background 0.4s ease;
+  background: var(--blue);
+}
+
+.rsi-buy-line,
+.rsi-sell-line {
+  position: absolute;
+  top: -4px;
+  width: 2px;
+  height: 14px;
+  border-radius: 1px;
+  transform: translateX(-50%);
+}
+
+.rsi-buy-line  { background: var(--green); }
+.rsi-sell-line { background: var(--red); }
+
 /* ===== Open positions (DCA) ===== */
 .positions-wrap h3 {
   font-size: 0.8rem;
