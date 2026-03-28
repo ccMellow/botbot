@@ -4,9 +4,7 @@
  * Bytt ut CSV_URL med raw-URL til din GitHub-repo.
  */
 
-// Bytt ut med din GitHub raw-URL når repo er satt opp:
-// const CSV_URL = "https://raw.githubusercontent.com/BRUKERNAVN/REPO/main/logs/trades.csv";
-const CSV_URL = "../logs/trades.csv";  // Lokal fallback for testing
+const CSV_URL = "https://raw.githubusercontent.com/ccMellow/botbot/main/logs/trades.csv";
 
 const REFRESH_MS = 5 * 60 * 1000;  // Oppdater hvert 5. minutt
 
