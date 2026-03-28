@@ -1,0 +1,33 @@
+# Aldri push API-nøkler
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtuelle miljøer
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Loggfiler kan bli store – valgfritt å pushe
+# logs/*.csv
+# logs/*.log

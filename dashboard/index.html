@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trading Bot Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>BTC/USDT Trading Bot</h1>
+    <p id="last-updated">Laster data...</p>
+  </header>
+
+  <main>
+    <!-- Sammendragskort -->
+    <section class="stats-grid">
+      <div class="card">
+        <span class="label">Total gevinst/tap</span>
+        <span class="value" id="total-pnl">–</span>
+      </div>
+      <div class="card">
+        <span class="label">Antall handler</span>
+        <span class="value" id="trade-count">–</span>
+      </div>
+      <div class="card">
+        <span class="label">Vinnrate</span>
+        <span class="value" id="win-rate">–</span>
+      </div>
+      <div class="card">
+        <span class="label">Gj.snitt fee/handel</span>
+        <span class="value" id="avg-fee">–</span>
+      </div>
+    </section>
+
+    <!-- Prisgraf -->
+    <section class="chart-section">
+      <h2>Prisgraf med handler</h2>
+      <canvas id="priceChart"></canvas>
+    </section>
+
+    <!-- Loggtebell -->
+    <section class="log-section">
+      <h2>Siste beslutninger</h2>
+      <div class="table-wrapper">
+        <table id="log-table">
+          <thead>
+            <tr>
+              <th>Tidspunkt</th>
+              <th>Handling</th>
+              <th>Pris (USDT)</th>
+              <th>BTC</th>
+              <th>Fee</th>
+              <th>Grunn</th>
+              <th>Resultat</th>
+            </tr>
+          </thead>
+          <tbody id="log-body">
+            <tr><td colspan="7">Laster...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="charts.js"></script>
+</body>
+</html>
