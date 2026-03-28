@@ -1,0 +1,47 @@
+{
+  "updated": "2026-03-28 20:11:15",
+  "balances": {
+    "BTC": 1.0,
+    "USDT": 10000.0,
+    "ETH": 1.0,
+    "SOL": 5.0
+  },
+  "positions": {
+    "BTCUSDT": {
+      "dca_count": 0,
+      "entries": []
+    },
+    "ETHUSDT": {
+      "dca_count": 1,
+      "avg_entry_price": 2022.07,
+      "take_profit_price": 2102.9528,
+      "stop_loss_price": 1981.6286,
+      "total_coin": 0.04945427,
+      "total_usdt": 100.0,
+      "entries": [
+        {
+          "dca_level": 1,
+          "entry_price": 2022.07,
+          "coin_amount": 0.04945427,
+          "usdt_amount": 100.0
+        }
+      ]
+    },
+    "SOLUSDT": {
+      "dca_count": 1,
+      "avg_entry_price": 83.38,
+      "take_profit_price": 86.7152,
+      "stop_loss_price": 81.7124,
+      "total_coin": 1.19932838,
+      "total_usdt": 100.0,
+      "entries": [
+        {
+          "dca_level": 1,
+          "entry_price": 83.38,
+          "coin_amount": 1.19932838,
+          "usdt_amount": 100.0
+        }
+      ]
+    }
+  }
+}

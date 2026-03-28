@@ -1,12 +1,12 @@
 /**
  * charts.js
- * Henter trades.csv fra GitHub (raw), parser den og oppdaterer dashboard.
- * Bytt ut CSV_URL med raw-URL til din GitHub-repo.
+ * Henter trades.csv fra GitHub, parser og oppdaterer dashboard per mynt.
  */
 
 const CSV_URL = "https://raw.githubusercontent.com/ccMellow/botbot/main/logs/trades.csv";
-
-const REFRESH_MS = 5 * 60 * 1000;  // Oppdater hvert 5. minutt
+const STATUS_URL = "https://raw.githubusercontent.com/ccMellow/botbot/main/dashboard/status.json";
+const REFRESH_MS = 5 * 60 * 1000;
+const SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
 
 /* ===== Parsing ===== */
 function parseCSV(text) {
@@ -15,8 +15,12 @@ function parseCSV(text) {
   const headers = lines[0].split(",");
   return lines.slice(1).map(line => {
     const vals = line.split(",");
-    return Object.fromEntries(headers.map((h, i) => [h, vals[i] ?? ""]));
+    return Object.fromEntries(headers.map((h, i) => [h.trim(), (vals[i] ?? "").trim()]));
   });
+}
+
+function filterByCoin(rows, symbol) {
+  return rows.filter(r => r.symbol === symbol);
 }
 
 /* ===== Statistikk ===== */
@@ -32,64 +36,119 @@ function computeStats(rows) {
   return { totalPnl, winRate, tradeCount, avgFee };
 }
 
-/* ===== DOM-oppdatering ===== */
-function updateStats(stats) {
+/* ===== Totalt sammendrag ===== */
+function updateTotalStats(rows) {
+  const stats = computeStats(rows);
   const pnlEl = document.getElementById("total-pnl");
   pnlEl.textContent = (stats.totalPnl >= 0 ? "+" : "") + stats.totalPnl.toFixed(2) + " USDT";
   pnlEl.className = "value " + (stats.totalPnl >= 0 ? "positive" : "negative");
-
-  document.getElementById("trade-count").textContent = stats.tradeCount;
-  document.getElementById("win-rate").textContent =
+  document.getElementById("total-trade-count").textContent = stats.tradeCount;
+  document.getElementById("total-win-rate").textContent =
     stats.winRate !== "–" ? stats.winRate + "%" : "–";
-  document.getElementById("avg-fee").textContent =
+  document.getElementById("total-avg-fee").textContent =
     stats.avgFee !== "–" ? stats.avgFee + " USDT" : "–";
 }
 
-function updateTable(rows) {
-  const tbody = document.getElementById("log-body");
-  const last50 = rows.slice(-50).reverse();
-  tbody.innerHTML = last50.map(r => {
+/* ===== Per-mynt stats ===== */
+function updateCoinStats(symbol, rows) {
+  const stats = computeStats(rows);
+  const pnlEl = document.getElementById(symbol + "-pnl");
+  if (!pnlEl) return;
+  pnlEl.textContent = (stats.totalPnl >= 0 ? "+" : "") + stats.totalPnl.toFixed(2) + " USDT";
+  pnlEl.className = "value " + (stats.totalPnl >= 0 ? "positive" : "negative");
+  document.getElementById(symbol + "-trade-count").textContent = stats.tradeCount;
+  document.getElementById(symbol + "-win-rate").textContent =
+    stats.winRate !== "–" ? stats.winRate + "%" : "–";
+  document.getElementById(symbol + "-avg-fee").textContent =
+    stats.avgFee !== "–" ? stats.avgFee + " USDT" : "–";
+}
+
+/* ===== Åpne posisjoner (DCA) ===== */
+function updateOpenPositions(symbol, rows) {
+  const el = document.getElementById(symbol + "-positions");
+  if (!el) return;
+
+  // Finn KJØP-rader som ikke har fått tilhørende SELG etter seg
+  // Enklest tilnærming: tell alle KJØP minus alle SELG, vis siste N KJØP
+  const buys = rows.filter(r => r.handling === "KJØP");
+  const sells = rows.filter(r => r.handling === "SELG");
+
+  // Beregn antall åpne posisjoner: summer DCA-nivåer solgt vs kjøpt
+  let openCount = buys.length;
+  sells.forEach(s => { openCount -= parseInt(s.dca_level || 1); });
+  openCount = Math.max(0, openCount);
+
+  if (openCount === 0) {
+    el.innerHTML = '<p class="muted">Ingen åpne posisjoner</p>';
+    return;
+  }
+
+  // Vis de siste openCount kjøpene
+  const openBuys = buys.slice(-openCount);
+  el.innerHTML = openBuys.map(b => {
+    const dca = b.dca_level || "?";
+    return `<div class="position-card">
+      <span class="pos-label">DCA #${dca}</span>
+      <span class="pos-price">$${parseFloat(b.pris || 0).toLocaleString("no-NO", {minimumFractionDigits: 2})}</span>
+      <span class="pos-amount">${parseFloat(b.mengde_coin || 0).toFixed(6)} coin</span>
+      <span class="pos-usdt">${parseFloat(b.beløp_usdt || 0).toFixed(2)} USDT</span>
+    </div>`;
+  }).join("");
+}
+
+/* ===== Logg-tabell ===== */
+function updateTable(symbol, rows) {
+  const tbody = document.getElementById(symbol + "-log-body");
+  if (!tbody) return;
+  const last20 = rows.slice(-20).reverse();
+  if (last20.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8">Ingen data ennå</td></tr>';
+    return;
+  }
+  tbody.innerHTML = last20.map(r => {
     const h = r.handling || "";
     const badge = `<span class="badge badge-${h.toLowerCase()}">${h}</span>`;
-    const pnl = r.handling === "SELG"
+    const pnl = h === "SELG"
       ? `<span class="${parseFloat(r.gevinst_usdt) >= 0 ? 'positive' : 'negative'}">
-           ${(parseFloat(r.gevinst_usdt) >= 0 ? "+" : "")}${parseFloat(r.gevinst_usdt).toFixed(2)} USDT
+           ${parseFloat(r.gevinst_usdt) >= 0 ? "+" : ""}${parseFloat(r.gevinst_usdt).toFixed(2)} USDT
          </span>`
       : "–";
     return `<tr>
       <td>${r.tidspunkt}</td>
       <td>${badge}</td>
       <td>${parseFloat(r.pris || 0).toLocaleString("no-NO", {minimumFractionDigits: 2})}</td>
-      <td>${parseFloat(r.mengde_btc || 0).toFixed(6)}</td>
+      <td>${parseFloat(r.mengde_coin || 0).toFixed(6)}</td>
       <td>${parseFloat(r.fee_usdt || 0).toFixed(4)}</td>
-      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis" title="${r.grunn}">${r.grunn}</td>
+      <td>${r.dca_level || "–"}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis" title="${r.grunn}">${r.grunn}</td>
       <td>${pnl}</td>
     </tr>`;
   }).join("");
 }
 
 /* ===== Prisgraf ===== */
-let chartInstance = null;
+const chartInstances = {};
 
-function updateChart(rows) {
+function updateChart(symbol, rows) {
   const data = rows.slice(-100);
   const labels = data.map(r => r.tidspunkt?.slice(11, 16) ?? "");
   const prices = data.map(r => parseFloat(r.pris || 0));
-
   const buyPoints = data.map(r => r.handling === "KJØP" ? parseFloat(r.pris) : null);
   const sellPoints = data.map(r => r.handling === "SELG" ? parseFloat(r.pris) : null);
 
-  const ctx = document.getElementById("priceChart").getContext("2d");
+  const canvas = document.getElementById("chart-" + symbol);
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
 
-  if (chartInstance) chartInstance.destroy();
+  if (chartInstances[symbol]) chartInstances[symbol].destroy();
 
-  chartInstance = new Chart(ctx, {
+  chartInstances[symbol] = new Chart(ctx, {
     type: "line",
     data: {
       labels,
       datasets: [
         {
-          label: "BTC/USDT",
+          label: symbol.replace("USDT", "/USDT"),
           data: prices,
           borderColor: "#63b3ed",
           borderWidth: 1.5,
@@ -143,17 +202,74 @@ function updateChart(rows) {
   });
 }
 
+/* ===== Status.json: saldo og åpne posisjoner ===== */
+function updateBalances(status) {
+  const bal = status.balances || {};
+  ["USDT", "BTC", "ETH", "SOL"].forEach(asset => {
+    const el = document.getElementById("bal-" + asset);
+    if (!el) return;
+    const val = bal[asset] ?? 0;
+    el.textContent = asset === "USDT"
+      ? val.toLocaleString("no-NO", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " USDT"
+      : val.toFixed(6) + " " + asset;
+  });
+  const upd = document.getElementById("status-updated");
+  if (upd && status.updated) upd.textContent = "Oppdatert: " + status.updated;
+}
+
+function updatePositionsTable(status) {
+  const tbody = document.getElementById("positions-body");
+  if (!tbody) return;
+  const positions = status.positions || {};
+  const rows = [];
+
+  SYMBOLS.forEach(symbol => {
+    const pos = positions[symbol];
+    if (!pos || pos.dca_count === 0) return;
+    const coin = symbol.replace("USDT", "");
+    rows.push(`<tr>
+      <td><strong>${coin}/USDT</strong></td>
+      <td>${pos.dca_count} / 3</td>
+      <td>$${pos.avg_entry_price.toLocaleString("no-NO", { minimumFractionDigits: 2 })}</td>
+      <td class="positive">$${pos.take_profit_price.toLocaleString("no-NO", { minimumFractionDigits: 2 })}</td>
+      <td class="negative">$${pos.stop_loss_price.toLocaleString("no-NO", { minimumFractionDigits: 2 })}</td>
+      <td>${pos.total_coin.toFixed(6)} ${coin}</td>
+      <td>${pos.total_usdt.toFixed(2)} USDT</td>
+    </tr>`);
+  });
+
+  tbody.innerHTML = rows.length > 0
+    ? rows.join("")
+    : '<tr><td colspan="7" style="color:var(--muted)">Ingen åpne posisjoner</td></tr>';
+}
+
 /* ===== Hoved-refresh ===== */
 async function refresh() {
   try {
-    const res = await fetch(CSV_URL + "?t=" + Date.now());
-    if (!res.ok) throw new Error(res.statusText);
-    const text = await res.text();
+    const bust = "?t=" + Date.now();
+    const [csvRes, statusRes] = await Promise.all([
+      fetch(CSV_URL + bust),
+      fetch(STATUS_URL + bust),
+    ]);
+
+    if (!csvRes.ok) throw new Error("CSV: " + csvRes.statusText);
+    const text = await csvRes.text();
     const rows = parseCSV(text);
 
-    updateStats(computeStats(rows));
-    updateTable(rows);
-    updateChart(rows);
+    updateTotalStats(rows);
+    SYMBOLS.forEach(symbol => {
+      const coinRows = filterByCoin(rows, symbol);
+      updateCoinStats(symbol, coinRows);
+      updateOpenPositions(symbol, coinRows);
+      updateTable(symbol, coinRows);
+      updateChart(symbol, coinRows);
+    });
+
+    if (statusRes.ok) {
+      const status = await statusRes.json();
+      updateBalances(status);
+      updatePositionsTable(status);
+    }
 
     document.getElementById("last-updated").textContent =
       "Sist oppdatert: " + new Date().toLocaleString("no-NO");

@@ -130,6 +130,153 @@ main {
 .positive { color: var(--green); }
 .negative { color: var(--red); }
 
+/* ===== Status sections (saldo + posisjoner) ===== */
+.status-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-title {
+  font-size: 0.82rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin: 0;
+}
+
+.balances-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+@media (min-width: 500px) {
+  .balances-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.balance-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.balance-asset {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.balance-amount {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.status-updated {
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+#positions-table td strong { color: var(--blue); }
+
+/* ===== Coin sections ===== */
+.coin-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-left-width: 3px;
+}
+
+.coin-btc { border-left-color: var(--blue); }
+.coin-eth { border-left-color: var(--accent); }
+.coin-sol { border-left-color: var(--green); }
+
+.coin-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.coin-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.03em;
+}
+
+.coin-btc .coin-label { color: var(--blue); }
+.coin-eth .coin-label { color: var(--accent); }
+.coin-sol .coin-label { color: var(--green); }
+
+/* ===== Open positions (DCA) ===== */
+.positions-wrap h3 {
+  font-size: 0.8rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+
+.positions-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.position-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 130px;
+}
+
+.pos-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.pos-price {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.pos-amount, .pos-usdt {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.muted { color: var(--muted); font-size: 0.85rem; }
+
+/* ===== Total stats label ===== */
+.total-stats {
+  border-top: 2px solid var(--border);
+  padding-top: 0.25rem;
+}
+
 /* ===== Chart section ===== */
 .chart-section {
   background: var(--surface);
