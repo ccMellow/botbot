@@ -11,3 +11,11 @@
 [2026-03-28 20:26:19] KJØP   | BTCUSDT | Pris: 66,844.17 USDT | Coin: 0.001496 | Fee: 0.1000 USDT | DCA#1 | RSI=52.1 < 55, DCA#1 | Handelsbeløp: 100.00 USDT | Min salgspris: 66,977.86
 [2026-03-28 20:26:19] KJØP   | ETHUSDT | Pris: 2,018.74 USDT | Coin: 0.049536 | Fee: 0.1000 USDT | DCA#2 | RSI=49.5 < 55, DCA#2 | Handelsbeløp: 100.00 USDT | Min salgspris: 2,022.78
 [2026-03-28 20:26:20] KJØP   | SOLUSDT | Pris: 83.16 USDT | Coin: 1.202501 | Fee: 0.1000 USDT | DCA#2 | RSI=44.1 < 55, DCA#2 | Handelsbeløp: 100.00 USDT | Min salgspris: 83.33
+[2026-03-28 20:41:25] KJØP   | BTCUSDT | Pris: 66,854.68 USDT | Coin: 0.001496 | Fee: 0.1000 USDT | DCA#2 | RSI=52.6 < 55, DCA#2 | Handelsbeløp: 100.00 USDT | Min salgspris: 66,988.39
+[2026-03-28 20:41:25] KJØP   | ETHUSDT | Pris: 2,020.08 USDT | Coin: 0.049503 | Fee: 0.1000 USDT | DCA#3 | RSI=51.6 < 55, DCA#3 | Handelsbeløp: 100.00 USDT | Min salgspris: 2,024.12
+[2026-03-28 20:41:26] KJØP   | SOLUSDT | Pris: 83.21 USDT | Coin: 1.201779 | Fee: 0.1000 USDT | DCA#3 | RSI=45.6 < 55, DCA#3 | Handelsbeløp: 100.00 USDT | Min salgspris: 83.38
+[2026-03-28 20:56:27] KJØP   | BTCUSDT | Pris: 66,845.11 USDT | Coin: 0.001496 | Fee: 0.1000 USDT | DCA#3 | RSI=52.1 < 55, DCA#3 | Handelsbeløp: 100.00 USDT | Min salgspris: 66,978.80
+[2026-03-28 20:56:28] VENTER | ETHUSDT | Pris: 2,019.71 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre
+[2026-03-28 20:56:28] VENTER | SOLUSDT | Pris: 83.16 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
+[2026-03-28 21:04:20] KJØP   | ETHUSDT | Pris: 2,023.83 USDT | Coin: 0.049400 | Fee: 0.1000 USDT | DCA#1 | RSI=52.2 < 55, DCA#1 | Handelsbeløp: 99.98 USDT | Min salgspris: 2,027.88
+[2026-03-28 21:04:21] KJØP   | SOLUSDT | Pris: 83.42 USDT | Coin: 1.198000 | Fee: 0.0999 USDT | DCA#1 | RSI=48.0 < 55, DCA#1 | Handelsbeløp: 99.94 USDT | Min salgspris: 83.59
