@@ -1,6 +1,9 @@
 # Aldri push API-nøkler
 .env
 
+# Lokal bot-state (gjenopprettes etter restart)
+state.json
+
 # Python
 __pycache__/
 *.py[cod]

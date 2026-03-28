@@ -13,14 +13,16 @@ TEXT_FILE = os.path.join(LOG_DIR, "trades.log")
 
 CSV_HEADERS = [
     "tidspunkt",
+    "symbol",
     "handling",
     "pris",
-    "mengde_btc",
+    "mengde_coin",
     "beløp_usdt",
     "fee_usdt",
     "grunn",
     "gevinst_usdt",
     "gevinst_prosent",
+    "dca_level",
 ]
 
 
@@ -39,12 +41,14 @@ def _ensure_csv_headers():
 def log_decision(
     handling: str,
     pris: float,
-    mengde_btc: float = 0.0,
+    symbol: str = "BTCUSDT",
+    mengde_coin: float = 0.0,
     beløp_usdt: float = 0.0,
     fee_usdt: float = 0.0,
     grunn: str = "",
     gevinst_usdt: float = 0.0,
     gevinst_prosent: float = 0.0,
+    dca_level: int = 0,
 ):
     """
     Logg en handelsbeslutning til både CSV og tekstfil.
@@ -55,14 +59,16 @@ def log_decision(
 
     row = {
         "tidspunkt": tidspunkt,
+        "symbol": symbol,
         "handling": handling,
         "pris": round(pris, 2),
-        "mengde_btc": round(mengde_btc, 6),
+        "mengde_coin": round(mengde_coin, 6),
         "beløp_usdt": round(beløp_usdt, 2),
         "fee_usdt": round(fee_usdt, 4),
         "grunn": grunn,
         "gevinst_usdt": round(gevinst_usdt, 2),
         "gevinst_prosent": round(gevinst_prosent, 4),
+        "dca_level": dca_level,
     }
 
     # CSV-logg
@@ -78,10 +84,11 @@ def log_decision(
             tegn = "+" if gevinst_usdt >= 0 else ""
             gevinst_str = f" | Resultat: {tegn}{gevinst_usdt:.2f} USDT ({tegn}{gevinst_prosent:.3f}%)"
 
+        dca_str = f" | DCA#{dca_level}" if dca_level > 0 else ""
         f.write(
-            f"[{tidspunkt}] {handling:6s} | Pris: {pris:,.2f} USDT"
-            f" | BTC: {mengde_btc:.6f} | Fee: {fee_usdt:.4f} USDT"
-            f" | {grunn}{gevinst_str}\n"
+            f"[{tidspunkt}] {handling:6s} | {symbol} | Pris: {pris:,.2f} USDT"
+            f" | Coin: {mengde_coin:.6f} | Fee: {fee_usdt:.4f} USDT"
+            f"{dca_str} | {grunn}{gevinst_str}\n"
         )
 
 
