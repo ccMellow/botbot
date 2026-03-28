@@ -421,3 +421,52 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 .badge-kjøp { background: rgba(72, 187, 120, 0.15); color: var(--green); }
 .badge-selg { background: rgba(252, 129, 129, 0.15); color: var(--red); }
 .badge-venter { background: rgba(113, 128, 150, 0.12); color: var(--muted); }
+
+/* ===== Navigation ===== */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav {
+  display: flex;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+  flex-wrap: wrap;
+}
+
+nav.nav-closed { display: none; }
+
+.nav-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-btn:hover { background: var(--border); color: var(--text); }
+.nav-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.hamburger {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+@media (min-width: 600px) {
+  nav.nav-closed { display: flex; }
+  .hamburger { display: none; }
+}
+
+/* ===== Pages ===== */
+.page.hidden { display: none; }

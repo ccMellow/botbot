@@ -12,3 +12,5 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-28 20:56:28,SOLUSDT,VENTER,83.16,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-28 21:04:20,ETHUSDT,KJØP,2023.83,0.0494,99.98,0.1,"RSI=52.2 < 55, DCA#1 | Handelsbeløp: 99.98 USDT | Min salgspris: 2,027.88",0.0,0.0,1
 2026-03-28 21:04:21,SOLUSDT,KJØP,83.42,1.198,99.94,0.0999,"RSI=48.0 < 55, DCA#1 | Handelsbeløp: 99.94 USDT | Min salgspris: 83.59",0.0,0.0,1
+2026-03-28 21:19:25,ETHUSDT,VENTER,2025.19,0.0,0.0,0.0,"Holder 1 posisjon(er) for ETHUSDT – RSI=59.3, endring=0.07% fra snitt",0.0,0.0,0
+2026-03-28 21:19:26,SOLUSDT,KJØP,83.47,1.198,100.0,0.1,"RSI=53.4 < 55, DCA#2 | Handelsbeløp: 100.00 USDT | Min salgspris: 83.64",0.0,0.0,2

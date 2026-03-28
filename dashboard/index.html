@@ -9,321 +9,346 @@
 </head>
 <body>
   <header>
-    <h1>BTC/USDT · ETH/USDT · SOL/USDT Trading Bot</h1>
+    <div class="header-top">
+      <h1>BTC · ETH · SOL Trading Bot</h1>
+      <button class="hamburger" id="hamburger" aria-label="Meny">&#9776;</button>
+    </div>
+    <nav id="main-nav" class="nav-closed">
+      <button class="nav-btn active" data-page="overview">Oversikt</button>
+      <button class="nav-btn" data-page="BTCUSDT">BTC</button>
+      <button class="nav-btn" data-page="ETHUSDT">ETH</button>
+      <button class="nav-btn" data-page="SOLUSDT">SOL</button>
+    </nav>
     <p id="last-updated">Laster data...</p>
   </header>
 
   <main>
-    <!-- Live pris-ticker -->
-    <section class="ticker-section">
-      <div class="ticker-item" id="ticker-BTCUSDT">
-        <span class="ticker-name">BTC</span>
-        <span class="ticker-price">–</span>
-        <span class="ticker-change">–</span>
-      </div>
-      <div class="ticker-item" id="ticker-ETHUSDT">
-        <span class="ticker-name">ETH</span>
-        <span class="ticker-price">–</span>
-        <span class="ticker-change">–</span>
-      </div>
-      <div class="ticker-item" id="ticker-SOLUSDT">
-        <span class="ticker-name">SOL</span>
-        <span class="ticker-price">–</span>
-        <span class="ticker-change">–</span>
-      </div>
-    </section>
 
-    <!-- Kontosaldo -->
-    <section class="status-section">
-      <h2 class="section-title">Kontosaldo (Testnet)</h2>
-      <div class="balances-grid">
-        <div class="balance-card">
-          <span class="balance-asset">USDT</span>
-          <span class="balance-amount" id="bal-USDT">–</span>
-        </div>
-        <div class="balance-card">
-          <span class="balance-asset">BTC</span>
-          <span class="balance-amount" id="bal-BTC">–</span>
-        </div>
-        <div class="balance-card">
-          <span class="balance-asset">ETH</span>
-          <span class="balance-amount" id="bal-ETH">–</span>
-        </div>
-        <div class="balance-card">
-          <span class="balance-asset">SOL</span>
-          <span class="balance-amount" id="bal-SOL">–</span>
-        </div>
-      </div>
-      <p class="status-updated" id="status-updated"></p>
-    </section>
+    <!-- ===== OVERVIEW PAGE ===== -->
+    <section id="page-overview" class="page">
 
-    <!-- Åpne posisjoner og triggerpriser -->
-    <section class="status-section">
-      <h2 class="section-title">Åpne posisjoner</h2>
-      <div class="table-wrapper">
-        <table id="positions-table">
-          <thead>
-            <tr>
-              <th>Mynt</th>
-              <th>DCA</th>
-              <th>Snitt inngangspris</th>
-              <th>Take profit</th>
-              <th>Stop loss</th>
-              <th>Coin-mengde</th>
-              <th>Investert (USDT)</th>
-            </tr>
-          </thead>
-          <tbody id="positions-body">
-            <tr><td colspan="7">Laster...</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- Totalt sammendrag -->
-    <section class="stats-grid total-stats">
-      <div class="card">
-        <span class="label">Total gevinst/tap</span>
-        <span class="value" id="total-pnl">–</span>
-      </div>
-      <div class="card">
-        <span class="label">Antall handler</span>
-        <span class="value" id="total-trade-count">–</span>
-      </div>
-      <div class="card">
-        <span class="label">Vinnrate (alle)</span>
-        <span class="value" id="total-win-rate">–</span>
-      </div>
-      <div class="card">
-        <span class="label">Gj.snitt fee/handel</span>
-        <span class="value" id="total-avg-fee">–</span>
-      </div>
-    </section>
-
-    <!-- BTC-seksjon -->
-    <section class="coin-section coin-btc" id="coin-BTCUSDT">
-      <div class="coin-header">
-        <span class="coin-label">BTC / USDT</span>
-      </div>
-      <div class="indicator-panel">
-        <div class="ind-item">
-          <span class="ind-label">Pris</span>
-          <span class="ind-value" id="BTCUSDT-ind-price">–</span>
+      <!-- Live pris-ticker -->
+      <section class="ticker-section">
+        <div class="ticker-item" id="ticker-BTCUSDT">
+          <span class="ticker-name">BTC</span>
+          <span class="ticker-price">–</span>
+          <span class="ticker-change">–</span>
         </div>
-        <div class="ind-item rsi-item">
-          <span class="ind-label">RSI (14)</span>
-          <span class="ind-value" id="BTCUSDT-ind-rsi">–</span>
-          <div class="rsi-gauge">
-            <div class="rsi-track">
-              <div class="rsi-fill" id="BTCUSDT-rsi-fill"></div>
-              <div class="rsi-buy-line" id="BTCUSDT-rsi-buy-line"></div>
-              <div class="rsi-sell-line" id="BTCUSDT-rsi-sell-line"></div>
-            </div>
+        <div class="ticker-item" id="ticker-ETHUSDT">
+          <span class="ticker-name">ETH</span>
+          <span class="ticker-price">–</span>
+          <span class="ticker-change">–</span>
+        </div>
+        <div class="ticker-item" id="ticker-SOLUSDT">
+          <span class="ticker-name">SOL</span>
+          <span class="ticker-price">–</span>
+          <span class="ticker-change">–</span>
+        </div>
+      </section>
+
+      <!-- Kontosaldo -->
+      <section class="status-section">
+        <h2 class="section-title">Kontosaldo (Testnet)</h2>
+        <div class="balances-grid">
+          <div class="balance-card">
+            <span class="balance-asset">USDT</span>
+            <span class="balance-amount" id="bal-USDT">–</span>
+          </div>
+          <div class="balance-card">
+            <span class="balance-asset">BTC</span>
+            <span class="balance-amount" id="bal-BTC">–</span>
+          </div>
+          <div class="balance-card">
+            <span class="balance-asset">ETH</span>
+            <span class="balance-amount" id="bal-ETH">–</span>
+          </div>
+          <div class="balance-card">
+            <span class="balance-asset">SOL</span>
+            <span class="balance-amount" id="bal-SOL">–</span>
           </div>
         </div>
-        <div class="ind-item">
-          <span class="ind-label">Til kjøp (RSI)</span>
-          <span class="ind-value" id="BTCUSDT-ind-to-buy">–</span>
-        </div>
-        <div class="ind-item">
-          <span class="ind-label">Til salg (RSI)</span>
-          <span class="ind-value" id="BTCUSDT-ind-to-sell">–</span>
-        </div>
-        <div class="ind-item">
-          <span class="ind-label">vs EMA200</span>
-          <span class="ind-value" id="BTCUSDT-ind-ema200">–</span>
-        </div>
-      </div>
-      <div class="stats-grid">
-        <div class="card">
-          <span class="label">Gevinst/tap</span>
-          <span class="value" id="BTCUSDT-pnl">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Handler</span>
-          <span class="value" id="BTCUSDT-trade-count">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Vinnrate</span>
-          <span class="value" id="BTCUSDT-win-rate">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Gj.snitt fee</span>
-          <span class="value" id="BTCUSDT-avg-fee">–</span>
-        </div>
-      </div>
-      <div class="positions-wrap">
-        <h3>Åpne posisjoner (DCA)</h3>
-        <div class="positions-grid" id="BTCUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
-      </div>
-      <div class="chart-section">
-        <h2>Prisgraf</h2>
-        <canvas id="chart-BTCUSDT"></canvas>
-      </div>
-      <div class="log-section">
-        <h2>Siste beslutninger</h2>
+        <p class="status-updated" id="status-updated"></p>
+      </section>
+
+      <!-- Åpne posisjoner og triggerpriser -->
+      <section class="status-section">
+        <h2 class="section-title">Åpne posisjoner</h2>
         <div class="table-wrapper">
-          <table>
+          <table id="positions-table">
             <thead>
-              <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
+              <tr>
+                <th>Mynt</th>
+                <th>DCA</th>
+                <th>Snitt inngangspris</th>
+                <th>Take profit</th>
+                <th>Stop loss</th>
+                <th>Coin-mengde</th>
+                <th>Investert (USDT)</th>
+              </tr>
             </thead>
-            <tbody id="BTCUSDT-log-body">
-              <tr><td colspan="8">Laster...</td></tr>
+            <tbody id="positions-body">
+              <tr><td colspan="7">Laster...</td></tr>
             </tbody>
           </table>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ETH-seksjon -->
-    <section class="coin-section coin-eth" id="coin-ETHUSDT">
-      <div class="coin-header">
-        <span class="coin-label">ETH / USDT</span>
-      </div>
-      <div class="indicator-panel">
-        <div class="ind-item">
-          <span class="ind-label">Pris</span>
-          <span class="ind-value" id="ETHUSDT-ind-price">–</span>
+      <!-- Totalt sammendrag -->
+      <section class="stats-grid total-stats">
+        <div class="card">
+          <span class="label">Total gevinst/tap</span>
+          <span class="value" id="total-pnl">–</span>
         </div>
-        <div class="ind-item rsi-item">
-          <span class="ind-label">RSI (14)</span>
-          <span class="ind-value" id="ETHUSDT-ind-rsi">–</span>
-          <div class="rsi-gauge">
-            <div class="rsi-track">
-              <div class="rsi-fill" id="ETHUSDT-rsi-fill"></div>
-              <div class="rsi-buy-line" id="ETHUSDT-rsi-buy-line"></div>
-              <div class="rsi-sell-line" id="ETHUSDT-rsi-sell-line"></div>
+        <div class="card">
+          <span class="label">Antall handler</span>
+          <span class="value" id="total-trade-count">–</span>
+        </div>
+        <div class="card">
+          <span class="label">Vinnrate (alle)</span>
+          <span class="value" id="total-win-rate">–</span>
+        </div>
+        <div class="card">
+          <span class="label">Gj.snitt fee/handel</span>
+          <span class="value" id="total-avg-fee">–</span>
+        </div>
+      </section>
+
+    </section><!-- #page-overview -->
+
+
+    <!-- ===== BTC PAGE ===== -->
+    <section id="page-BTCUSDT" class="page hidden">
+      <section class="coin-section coin-btc">
+        <div class="coin-header">
+          <span class="coin-label">BTC / USDT</span>
+        </div>
+        <div class="indicator-panel">
+          <div class="ind-item">
+            <span class="ind-label">Pris</span>
+            <span class="ind-value" id="BTCUSDT-ind-price">–</span>
+          </div>
+          <div class="ind-item rsi-item">
+            <span class="ind-label">RSI (14)</span>
+            <span class="ind-value" id="BTCUSDT-ind-rsi">–</span>
+            <div class="rsi-gauge">
+              <div class="rsi-track">
+                <div class="rsi-fill" id="BTCUSDT-rsi-fill"></div>
+                <div class="rsi-buy-line" id="BTCUSDT-rsi-buy-line"></div>
+                <div class="rsi-sell-line" id="BTCUSDT-rsi-sell-line"></div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="ind-item">
-          <span class="ind-label">Til kjøp (RSI)</span>
-          <span class="ind-value" id="ETHUSDT-ind-to-buy">–</span>
-        </div>
-        <div class="ind-item">
-          <span class="ind-label">Til salg (RSI)</span>
-          <span class="ind-value" id="ETHUSDT-ind-to-sell">–</span>
-        </div>
-        <div class="ind-item">
-          <span class="ind-label">vs EMA200</span>
-          <span class="ind-value" id="ETHUSDT-ind-ema200">–</span>
-        </div>
-      </div>
-      <div class="stats-grid">
-        <div class="card">
-          <span class="label">Gevinst/tap</span>
-          <span class="value" id="ETHUSDT-pnl">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Handler</span>
-          <span class="value" id="ETHUSDT-trade-count">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Vinnrate</span>
-          <span class="value" id="ETHUSDT-win-rate">–</span>
-        </div>
-        <div class="card">
-          <span class="label">Gj.snitt fee</span>
-          <span class="value" id="ETHUSDT-avg-fee">–</span>
-        </div>
-      </div>
-      <div class="positions-wrap">
-        <h3>Åpne posisjoner (DCA)</h3>
-        <div class="positions-grid" id="ETHUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
-      </div>
-      <div class="chart-section">
-        <h2>Prisgraf</h2>
-        <canvas id="chart-ETHUSDT"></canvas>
-      </div>
-      <div class="log-section">
-        <h2>Siste beslutninger</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
-            </thead>
-            <tbody id="ETHUSDT-log-body">
-              <tr><td colspan="8">Laster...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- SOL-seksjon -->
-    <section class="coin-section coin-sol" id="coin-SOLUSDT">
-      <div class="coin-header">
-        <span class="coin-label">SOL / USDT</span>
-      </div>
-      <div class="indicator-panel">
-        <div class="ind-item">
-          <span class="ind-label">Pris</span>
-          <span class="ind-value" id="SOLUSDT-ind-price">–</span>
-        </div>
-        <div class="ind-item rsi-item">
-          <span class="ind-label">RSI (14)</span>
-          <span class="ind-value" id="SOLUSDT-ind-rsi">–</span>
-          <div class="rsi-gauge">
-            <div class="rsi-track">
-              <div class="rsi-fill" id="SOLUSDT-rsi-fill"></div>
-              <div class="rsi-buy-line" id="SOLUSDT-rsi-buy-line"></div>
-              <div class="rsi-sell-line" id="SOLUSDT-rsi-sell-line"></div>
-            </div>
+          <div class="ind-item">
+            <span class="ind-label">Til kjøp (RSI)</span>
+            <span class="ind-value" id="BTCUSDT-ind-to-buy">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">Til salg (RSI)</span>
+            <span class="ind-value" id="BTCUSDT-ind-to-sell">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">vs EMA200</span>
+            <span class="ind-value" id="BTCUSDT-ind-ema200">–</span>
           </div>
         </div>
-        <div class="ind-item">
-          <span class="ind-label">Til kjøp (RSI)</span>
-          <span class="ind-value" id="SOLUSDT-ind-to-buy">–</span>
+        <div class="stats-grid">
+          <div class="card">
+            <span class="label">Gevinst/tap</span>
+            <span class="value" id="BTCUSDT-pnl">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Handler</span>
+            <span class="value" id="BTCUSDT-trade-count">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Vinnrate</span>
+            <span class="value" id="BTCUSDT-win-rate">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Gj.snitt fee</span>
+            <span class="value" id="BTCUSDT-avg-fee">–</span>
+          </div>
         </div>
-        <div class="ind-item">
-          <span class="ind-label">Til salg (RSI)</span>
-          <span class="ind-value" id="SOLUSDT-ind-to-sell">–</span>
+        <div class="positions-wrap">
+          <h3>Åpne posisjoner (DCA)</h3>
+          <div class="positions-grid" id="BTCUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
         </div>
-        <div class="ind-item">
-          <span class="ind-label">vs EMA200</span>
-          <span class="ind-value" id="SOLUSDT-ind-ema200">–</span>
+        <div class="chart-section">
+          <h2>Prisgraf</h2>
+          <canvas id="chart-BTCUSDT"></canvas>
         </div>
-      </div>
-      <div class="stats-grid">
-        <div class="card">
-          <span class="label">Gevinst/tap</span>
-          <span class="value" id="SOLUSDT-pnl">–</span>
+        <div class="log-section">
+          <h2>Siste beslutninger</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
+              </thead>
+              <tbody id="BTCUSDT-log-body">
+                <tr><td colspan="8">Laster...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="card">
-          <span class="label">Handler</span>
-          <span class="value" id="SOLUSDT-trade-count">–</span>
+      </section>
+    </section><!-- #page-BTCUSDT -->
+
+
+    <!-- ===== ETH PAGE ===== -->
+    <section id="page-ETHUSDT" class="page hidden">
+      <section class="coin-section coin-eth">
+        <div class="coin-header">
+          <span class="coin-label">ETH / USDT</span>
         </div>
-        <div class="card">
-          <span class="label">Vinnrate</span>
-          <span class="value" id="SOLUSDT-win-rate">–</span>
+        <div class="indicator-panel">
+          <div class="ind-item">
+            <span class="ind-label">Pris</span>
+            <span class="ind-value" id="ETHUSDT-ind-price">–</span>
+          </div>
+          <div class="ind-item rsi-item">
+            <span class="ind-label">RSI (14)</span>
+            <span class="ind-value" id="ETHUSDT-ind-rsi">–</span>
+            <div class="rsi-gauge">
+              <div class="rsi-track">
+                <div class="rsi-fill" id="ETHUSDT-rsi-fill"></div>
+                <div class="rsi-buy-line" id="ETHUSDT-rsi-buy-line"></div>
+                <div class="rsi-sell-line" id="ETHUSDT-rsi-sell-line"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">Til kjøp (RSI)</span>
+            <span class="ind-value" id="ETHUSDT-ind-to-buy">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">Til salg (RSI)</span>
+            <span class="ind-value" id="ETHUSDT-ind-to-sell">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">vs EMA200</span>
+            <span class="ind-value" id="ETHUSDT-ind-ema200">–</span>
+          </div>
         </div>
-        <div class="card">
-          <span class="label">Gj.snitt fee</span>
-          <span class="value" id="SOLUSDT-avg-fee">–</span>
+        <div class="stats-grid">
+          <div class="card">
+            <span class="label">Gevinst/tap</span>
+            <span class="value" id="ETHUSDT-pnl">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Handler</span>
+            <span class="value" id="ETHUSDT-trade-count">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Vinnrate</span>
+            <span class="value" id="ETHUSDT-win-rate">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Gj.snitt fee</span>
+            <span class="value" id="ETHUSDT-avg-fee">–</span>
+          </div>
         </div>
-      </div>
-      <div class="positions-wrap">
-        <h3>Åpne posisjoner (DCA)</h3>
-        <div class="positions-grid" id="SOLUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
-      </div>
-      <div class="chart-section">
-        <h2>Prisgraf</h2>
-        <canvas id="chart-SOLUSDT"></canvas>
-      </div>
-      <div class="log-section">
-        <h2>Siste beslutninger</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
-            </thead>
-            <tbody id="SOLUSDT-log-body">
-              <tr><td colspan="8">Laster...</td></tr>
-            </tbody>
-          </table>
+        <div class="positions-wrap">
+          <h3>Åpne posisjoner (DCA)</h3>
+          <div class="positions-grid" id="ETHUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
         </div>
-      </div>
-    </section>
+        <div class="chart-section">
+          <h2>Prisgraf</h2>
+          <canvas id="chart-ETHUSDT"></canvas>
+        </div>
+        <div class="log-section">
+          <h2>Siste beslutninger</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
+              </thead>
+              <tbody id="ETHUSDT-log-body">
+                <tr><td colspan="8">Laster...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section><!-- #page-ETHUSDT -->
+
+
+    <!-- ===== SOL PAGE ===== -->
+    <section id="page-SOLUSDT" class="page hidden">
+      <section class="coin-section coin-sol">
+        <div class="coin-header">
+          <span class="coin-label">SOL / USDT</span>
+        </div>
+        <div class="indicator-panel">
+          <div class="ind-item">
+            <span class="ind-label">Pris</span>
+            <span class="ind-value" id="SOLUSDT-ind-price">–</span>
+          </div>
+          <div class="ind-item rsi-item">
+            <span class="ind-label">RSI (14)</span>
+            <span class="ind-value" id="SOLUSDT-ind-rsi">–</span>
+            <div class="rsi-gauge">
+              <div class="rsi-track">
+                <div class="rsi-fill" id="SOLUSDT-rsi-fill"></div>
+                <div class="rsi-buy-line" id="SOLUSDT-rsi-buy-line"></div>
+                <div class="rsi-sell-line" id="SOLUSDT-rsi-sell-line"></div>
+              </div>
+            </div>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">Til kjøp (RSI)</span>
+            <span class="ind-value" id="SOLUSDT-ind-to-buy">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">Til salg (RSI)</span>
+            <span class="ind-value" id="SOLUSDT-ind-to-sell">–</span>
+          </div>
+          <div class="ind-item">
+            <span class="ind-label">vs EMA200</span>
+            <span class="ind-value" id="SOLUSDT-ind-ema200">–</span>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="card">
+            <span class="label">Gevinst/tap</span>
+            <span class="value" id="SOLUSDT-pnl">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Handler</span>
+            <span class="value" id="SOLUSDT-trade-count">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Vinnrate</span>
+            <span class="value" id="SOLUSDT-win-rate">–</span>
+          </div>
+          <div class="card">
+            <span class="label">Gj.snitt fee</span>
+            <span class="value" id="SOLUSDT-avg-fee">–</span>
+          </div>
+        </div>
+        <div class="positions-wrap">
+          <h3>Åpne posisjoner (DCA)</h3>
+          <div class="positions-grid" id="SOLUSDT-positions"><p class="muted">Ingen åpne posisjoner</p></div>
+        </div>
+        <div class="chart-section">
+          <h2>Prisgraf</h2>
+          <canvas id="chart-SOLUSDT"></canvas>
+        </div>
+        <div class="log-section">
+          <h2>Siste beslutninger</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr><th>Tidspunkt</th><th>Handling</th><th>Pris</th><th>Coin</th><th>Fee</th><th>DCA</th><th>Grunn</th><th>Resultat</th></tr>
+              </thead>
+              <tbody id="SOLUSDT-log-body">
+                <tr><td colspan="8">Laster...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section><!-- #page-SOLUSDT -->
+
   </main>
 
   <script src="charts.js"></script>

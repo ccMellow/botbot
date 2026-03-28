@@ -357,6 +357,27 @@ async function refresh() {
 refresh();
 setInterval(refresh, REFRESH_MS);
 
+/* ===== Navigation ===== */
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.remove('hidden');
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === pageId);
+  });
+  document.getElementById('main-nav').classList.add('nav-closed');
+}
+
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('main-nav').classList.toggle('nav-closed');
+});
+
+showPage('overview');
+
 /* ===== Live pris-ticker ===== */
 const TICKER_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
 const TICKER_MS = 10 * 1000;
