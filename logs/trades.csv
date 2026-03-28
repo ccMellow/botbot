@@ -14,3 +14,8 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-28 21:04:21,SOLUSDT,KJØP,83.42,1.198,99.94,0.0999,"RSI=48.0 < 55, DCA#1 | Handelsbeløp: 99.94 USDT | Min salgspris: 83.59",0.0,0.0,1
 2026-03-28 21:19:25,ETHUSDT,VENTER,2025.19,0.0,0.0,0.0,"Holder 1 posisjon(er) for ETHUSDT – RSI=59.3, endring=0.07% fra snitt",0.0,0.0,0
 2026-03-28 21:19:26,SOLUSDT,KJØP,83.47,1.198,100.0,0.1,"RSI=53.4 < 55, DCA#2 | Handelsbeløp: 100.00 USDT | Min salgspris: 83.64",0.0,0.0,2
+2026-03-28 21:34:29,ETHUSDT,VENTER,2023.5,0.0,0.0,0.0,"Holder 1 posisjon(er) for ETHUSDT – RSI=56.1, endring=-0.02% fra snitt",0.0,0.0,0
+2026-03-28 21:34:30,SOLUSDT,KJØP,83.4,1.199,100.0,0.1,"RSI=50.7 < 55, DCA#3 | Handelsbeløp: 100.00 USDT | Min salgspris: 83.57",0.0,0.0,3
+2026-03-28 22:40:52,BTCUSDT,KJØP,66866.71,0.00149,99.63,0.0996,"RSI=48.4 < 55, DCA#1 | Handelsbeløp: 99.63 USDT | Min salgspris: 67,000.44",0.0,0.0,1
+2026-03-28 22:40:53,ETHUSDT,KJØP,2018.8,0.0495,99.93,0.0999,"RSI=48.2 < 55, DCA#1 | Handelsbeløp: 99.93 USDT | Min salgspris: 2,022.84",0.0,0.0,1
+2026-03-28 22:40:54,SOLUSDT,KJØP,82.83,1.207,99.98,0.1,"RSI=40.6 < 55, DCA#1 | Handelsbeløp: 99.98 USDT | Min salgspris: 83.00",0.0,0.0,1
