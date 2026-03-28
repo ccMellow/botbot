@@ -4,3 +4,4 @@ tidspunkt,handling,pris,mengde_btc,beløp_usdt,fee_usdt,grunn,gevinst_usdt,gevin
 2026-03-28 18:34:23,VENTER,66778.49,0.0,0.0,0.0,VENTER – RSI=51.3 (trenger < 35),0.0,0.0
 2026-03-28 18:49:26,VENTER,66812.7,0.0,0.0,0.0,VENTER – RSI=52.8 (trenger < 35),0.0,0.0
 2026-03-28 18:59:48,VENTER,66812.7,0.0,0.0,0.0,"VENTER – pris 66,812.70 under EMA200 67,284.58",0.0,0.0
+2026-03-28 19:05:39,KJØP,66846.2,0.001496,100.0,0.1,"RSI=54.3 < 55, pris 66,846.20 > EMA200 67,281.98 | Handelsbeløp: 100.00 USDT (saldo: 10,000.00) | Min salgspris: 66,979.89",0.0,0.0
