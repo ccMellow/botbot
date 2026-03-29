@@ -320,3 +320,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-30 00:50:47,ETHUSDT,SELG,1945.0,0.1492,290.19,0.2902,"STOPLOSS utløst (-2.09% fra snitt 2,009.79)",-10.27,-3.2239,3
 2026-03-30 00:50:47,SOLUSDT,VENTER,80.6,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-30 00:50:48,SOLUSDT,SELG,79.5,3.625,287.79,0.2878,STOPLOSS utløst (-2.54% fra snitt 82.70),-12.21,-3.8733,3
+2026-03-30 01:05:53,BTCUSDT,VENTER,65836.53,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 01:05:53,ETHUSDT,VENTER,1973.09,0.0,0.0,0.0,Stoploss-cooldown aktiv – 15 min igjen før kjøp tillates,0.0,0.0,0
+2026-03-30 01:05:53,SOLUSDT,VENTER,80.88,0.0,0.0,0.0,Stoploss-cooldown aktiv – 15 min igjen før kjøp tillates,0.0,0.0,0
+2026-03-30 01:20:56,BTCUSDT,VENTER,66091.8,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 01:20:57,ETHUSDT,KJØP,1989.82,0.0502,99.89,0.0999,"RSI=44.6 < 55, DCA#1 | Handelsbeløp: 99.89 USDT | Min salgspris: 1,993.80",0.0,0.0,1
+2026-03-30 01:20:58,SOLUSDT,KJØP,81.52,1.226,99.94,0.0999,"RSI=43.3 < 55, DCA#1 | Handelsbeløp: 99.94 USDT | Min salgspris: 81.68",0.0,0.0,1
