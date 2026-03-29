@@ -1,10 +1,10 @@
 {
-  "updated": "2026-03-30 00:20:41",
+  "updated": "2026-03-30 00:50:48",
   "balances": {
     "BTC": 1.01045,
-    "USDT": 7504.114303,
-    "ETH": 1.3966,
-    "SOL": 17.046
+    "USDT": 8082.098303,
+    "ETH": 1.2474,
+    "SOL": 13.426
   },
   "positions": {
     "BTCUSDT": {
@@ -36,95 +36,47 @@
       ]
     },
     "ETHUSDT": {
-      "dca_count": 3,
-      "avg_entry_price": 2009.793,
-      "take_profit_price": 2090.1848,
-      "stop_loss_price": 1969.5972,
-      "total_coin": 0.1492,
-      "total_usdt": 299.86,
-      "entries": [
-        {
-          "dca_level": 1,
-          "entry_price": 2010.31,
-          "coin_amount": 0.0497,
-          "usdt_amount": 99.91
-        },
-        {
-          "dca_level": 2,
-          "entry_price": 2007.78,
-          "coin_amount": 0.0498,
-          "usdt_amount": 99.99
-        },
-        {
-          "dca_level": 3,
-          "entry_price": 2011.29,
-          "coin_amount": 0.0497,
-          "usdt_amount": 99.96
-        }
-      ]
+      "dca_count": 0,
+      "entries": []
     },
     "SOLUSDT": {
-      "dca_count": 3,
-      "avg_entry_price": 82.7033,
-      "take_profit_price": 86.0115,
-      "stop_loss_price": 81.0493,
-      "total_coin": 3.625,
-      "total_usdt": 299.8,
-      "entries": [
-        {
-          "dca_level": 1,
-          "entry_price": 82.72,
-          "coin_amount": 1.208,
-          "usdt_amount": 99.93
-        },
-        {
-          "dca_level": 2,
-          "entry_price": 82.58,
-          "coin_amount": 1.21,
-          "usdt_amount": 99.92
-        },
-        {
-          "dca_level": 3,
-          "entry_price": 82.81,
-          "coin_amount": 1.207,
-          "usdt_amount": 99.95
-        }
-      ]
+      "dca_count": 0,
+      "entries": []
     }
   },
   "indicators": {
     "BTCUSDT": {
-      "price": 66316.59,
-      "rsi": 41.33,
-      "ema200": 66734.0746,
+      "price": 65695.9,
+      "rsi": 28.24,
+      "ema200": 66665.9711,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": -13.67,
-      "rsi_to_sell": 23.67,
+      "rsi_to_buy": -26.76,
+      "rsi_to_sell": 36.76,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -0.63
+      "price_vs_ema200_pct": -1.46
     },
     "ETHUSDT": {
-      "price": 1992.36,
-      "rsi": 42.15,
-      "ema200": 2006.8135,
+      "price": 1967.87,
+      "rsi": 27.38,
+      "ema200": 2004.6953,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": -12.85,
-      "rsi_to_sell": 22.85,
+      "rsi_to_buy": -27.62,
+      "rsi_to_sell": 37.62,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -0.72
+      "price_vs_ema200_pct": -1.84
     },
     "SOLUSDT": {
-      "price": 81.59,
-      "rsi": 42.75,
-      "ema200": 82.7546,
+      "price": 80.6,
+      "rsi": 29.62,
+      "ema200": 82.63,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": -12.25,
-      "rsi_to_sell": 22.25,
+      "rsi_to_buy": -25.38,
+      "rsi_to_sell": 35.38,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -1.41
+      "price_vs_ema200_pct": -2.46
     }
   }
 }
