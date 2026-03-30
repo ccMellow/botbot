@@ -399,3 +399,5 @@
 [2026-03-30 14:54:03] VENTER | SOLUSDT | Pris: 84.52 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 2 posisjon(er) for SOLUSDT – RSI=64.3, endring=0.71% fra snitt
 [2026-03-30 15:09:09] VENTER | SOLUSDT | Pris: 84.52 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 2 posisjon(er) for SOLUSDT – RSI=64.3, endring=0.71% fra snitt
 [2026-03-30 15:24:12] SELG   | SOLUSDT | Pris: 84.82 USDT | Coin: 2.382000 | Fee: 0.2019 USDT | DCA#2 | RSI=67.1 > 65, lønnsomt salg (snitt 83.93) | Resultat: +1.73 USDT (+1.066%)
+[2026-03-30 15:54:22] KJØP   | BTCUSDT | Pris: 67,721.17 USDT | Coin: 0.001470 | Fee: 0.0996 USDT | DCA#1 | RSI=54.5 < 55, DCA#1 | Handelsbeløp: 99.55 USDT | Min salgspris: 67,856.61
+[2026-03-30 15:54:23] KJØP   | SOLUSDT | Pris: 84.33 USDT | Coin: 1.185000 | Fee: 0.0999 USDT | DCA#1 | RSI=52.8 < 55, DCA#1 | Handelsbeløp: 99.93 USDT | Min salgspris: 84.50
