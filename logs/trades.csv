@@ -460,3 +460,11 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-30 21:25:56,BTCUSDT,VENTER,66424.91,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-30 21:25:56,ETHUSDT,VENTER,2018.7,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-30 21:25:56,SOLUSDT,VENTER,82.51,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 21:41:00,BTCUSDT,VENTER,66302.62,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 21:41:00,ETHUSDT,VENTER,2015.67,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 21:41:01,ETHUSDT,SELG,2017.61,0.1455,293.56,0.2936,"STOPLOSS utløst (-2.13% fra snitt 2,059.59)",-6.71,-2.0381,3
+2026-03-30 21:41:01,SOLUSDT,VENTER,82.15,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 21:41:01,SOLUSDT,SELG,82.24,3.562,292.77,0.2928,STOPLOSS utløst (-2.43% fra snitt 84.19),-7.56,-2.3201,3
+2026-03-30 21:56:05,BTCUSDT,VENTER,66339.01,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-30 21:56:05,ETHUSDT,VENTER,2018.47,0.0,0.0,0.0,Stoploss-cooldown aktiv – 15 min igjen før kjøp tillates,0.0,0.0,0
+2026-03-30 21:56:05,SOLUSDT,VENTER,82.14,0.0,0.0,0.0,Stoploss-cooldown aktiv – 15 min igjen før kjøp tillates,0.0,0.0,0
