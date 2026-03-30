@@ -364,3 +364,4 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-30 04:21:40,SOLUSDT,SELG,82.79,3.686,304.67,0.3047,"RSI=65.9 > 65, lønnsomt salg (snitt 81.37)",4.63,1.7451,3
 2026-03-30 04:36:44,BTCUSDT,VENTER,66726.87,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=58.0, endring=0.02% fra snitt",0.0,0.0,0
 2026-03-30 04:51:47,BTCUSDT,VENTER,67013.02,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=63.6, endring=0.44% fra snitt",0.0,0.0,0
+2026-03-30 05:06:52,BTCUSDT,SELG,67026.49,0.00448,299.61,0.2996,"RSI=65.5 > 65, lønnsomt salg (snitt 66,716.75)",0.79,0.4643,3
