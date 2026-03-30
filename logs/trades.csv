@@ -384,3 +384,7 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-30 13:38:46,SOLUSDT,VENTER,84.11,0.0,0.0,0.0,"Holder 2 posisjon(er) for SOLUSDT – RSI=57.6, endring=0.22% fra snitt",0.0,0.0,0
 2026-03-30 13:53:49,BTCUSDT,VENTER,67594.85,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=56.4, endring=0.18% fra snitt",0.0,0.0,0
 2026-03-30 13:53:49,SOLUSDT,VENTER,84.16,0.0,0.0,0.0,"Holder 2 posisjon(er) for SOLUSDT – RSI=58.7, endring=0.28% fra snitt",0.0,0.0,0
+2026-03-30 14:08:53,BTCUSDT,VENTER,67667.38,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=59.2, endring=0.29% fra snitt",0.0,0.0,0
+2026-03-30 14:08:53,SOLUSDT,VENTER,84.25,0.0,0.0,0.0,"Holder 2 posisjon(er) for SOLUSDT – RSI=60.8, endring=0.39% fra snitt",0.0,0.0,0
+2026-03-30 14:23:57,BTCUSDT,SELG,67945.57,0.00444,301.0,0.301,"RSI=65.1 > 65, lønnsomt salg (snitt 67,471.28)",1.51,0.7029,3
+2026-03-30 14:23:57,SOLUSDT,VENTER,84.35,0.0,0.0,0.0,"Holder 2 posisjon(er) for SOLUSDT – RSI=63.0, endring=0.51% fra snitt",0.0,0.0,0
