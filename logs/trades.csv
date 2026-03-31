@@ -600,3 +600,12 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-31 11:30:04,BTCUSDT,VENTER,66683.31,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-31 11:30:04,ETHUSDT,VENTER,2036.77,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
 2026-03-31 11:30:04,SOLUSDT,VENTER,81.8,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 11:45:09,BTCUSDT,VENTER,66498.03,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 11:45:09,ETHUSDT,VENTER,2030.1,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 11:45:09,SOLUSDT,VENTER,81.84,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 12:00:13,BTCUSDT,VENTER,66114.87,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for BTCUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 12:00:14,BTCUSDT,SELG,66114.86,0.00443,292.89,0.2929,"STOPLOSS utløst (-2.05% fra snitt 67,500.71)",-6.74,-2.0531,3
+2026-03-31 12:00:14,ETHUSDT,VENTER,2017.73,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 12:00:14,ETHUSDT,SELG,2017.93,0.1455,293.61,0.2936,"STOPLOSS utløst (-2.12% fra snitt 2,061.48)",-6.94,-2.1124,3
+2026-03-31 12:00:14,SOLUSDT,VENTER,80.49,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 12:00:15,SOLUSDT,SELG,80.54,3.595,289.14,0.2891,STOPLOSS utløst (-3.52% fra snitt 83.42),-10.97,-3.4563,3
