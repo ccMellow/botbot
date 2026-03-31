@@ -558,3 +558,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-31 07:59:07,BTCUSDT,VENTER,67647.99,0.0,0.0,0.0,"Holder 2 posisjon(er) for BTCUSDT – RSI=56.4, endring=0.14% fra snitt",0.0,0.0,0
 2026-03-31 07:59:07,ETHUSDT,VENTER,2064.21,0.0,0.0,0.0,"Holder 3 posisjon(er) for ETHUSDT – RSI=56.8, endring=0.13% fra snitt",0.0,0.0,0
 2026-03-31 07:59:07,SOLUSDT,VENTER,83.37,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 08:14:11,BTCUSDT,VENTER,67685.06,0.0,0.0,0.0,"Holder 2 posisjon(er) for BTCUSDT – RSI=57.7, endring=0.19% fra snitt",0.0,0.0,0
+2026-03-31 08:14:11,ETHUSDT,VENTER,2064.35,0.0,0.0,0.0,"Holder 3 posisjon(er) for ETHUSDT – RSI=56.9, endring=0.14% fra snitt",0.0,0.0,0
+2026-03-31 08:14:11,SOLUSDT,VENTER,83.74,0.0,0.0,0.0,"Holder 3 posisjon(er) for SOLUSDT – RSI=58.4, endring=0.38% fra snitt",0.0,0.0,0
+2026-03-31 08:29:16,BTCUSDT,KJØP,67393.08,0.00148,99.74,0.0997,"RSI=49.0 < 55, DCA#3 | Handelsbeløp: 99.74 USDT | Min salgspris: 67,527.87",0.0,0.0,3
+2026-03-31 08:29:16,ETHUSDT,VENTER,2059.08,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre,0.0,0.0,0
+2026-03-31 08:29:16,SOLUSDT,VENTER,83.37,0.0,0.0,0.0,Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre,0.0,0.0,0

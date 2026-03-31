@@ -565,3 +565,9 @@
 [2026-03-31 07:59:07] VENTER | BTCUSDT | Pris: 67,647.99 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 2 posisjon(er) for BTCUSDT – RSI=56.4, endring=0.14% fra snitt
 [2026-03-31 07:59:07] VENTER | ETHUSDT | Pris: 2,064.21 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for ETHUSDT – RSI=56.8, endring=0.13% fra snitt
 [2026-03-31 07:59:07] VENTER | SOLUSDT | Pris: 83.37 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
+[2026-03-31 08:14:11] VENTER | BTCUSDT | Pris: 67,685.06 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 2 posisjon(er) for BTCUSDT – RSI=57.7, endring=0.19% fra snitt
+[2026-03-31 08:14:11] VENTER | ETHUSDT | Pris: 2,064.35 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for ETHUSDT – RSI=56.9, endring=0.14% fra snitt
+[2026-03-31 08:14:11] VENTER | SOLUSDT | Pris: 83.74 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for SOLUSDT – RSI=58.4, endring=0.38% fra snitt
+[2026-03-31 08:29:16] KJØP   | BTCUSDT | Pris: 67,393.08 USDT | Coin: 0.001480 | Fee: 0.0997 USDT | DCA#3 | RSI=49.0 < 55, DCA#3 | Handelsbeløp: 99.74 USDT | Min salgspris: 67,527.87
+[2026-03-31 08:29:16] VENTER | ETHUSDT | Pris: 2,059.08 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for ETHUSDT – ingen ny kjøpsordre
+[2026-03-31 08:29:16] VENTER | SOLUSDT | Pris: 83.37 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
