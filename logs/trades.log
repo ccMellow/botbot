@@ -549,3 +549,7 @@
 [2026-03-31 05:58:29] KJØP   | SOLUSDT | Pris: 83.53 USDT | Coin: 1.197000 | Fee: 0.1000 USDT | DCA#2 | RSI=52.3 < 55, DCA#2 | Handelsbeløp: 99.99 USDT | Min salgspris: 83.70
 [2026-03-31 06:13:33] VENTER | SOLUSDT | Pris: 83.59 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 2 posisjon(er) for SOLUSDT – RSI=56.1, endring=0.15% fra snitt
 [2026-03-31 06:28:36] KJØP   | SOLUSDT | Pris: 83.34 USDT | Coin: 1.199000 | Fee: 0.0999 USDT | DCA#3 | RSI=54.0 < 55, DCA#3 | Handelsbeløp: 99.92 USDT | Min salgspris: 83.51
+[2026-03-31 06:43:44] KJØP   | ETHUSDT | Pris: 2,061.51 USDT | Coin: 0.048500 | Fee: 0.1000 USDT | DCA#1 | RSI=54.5 < 55, DCA#1 | Handelsbeløp: 99.98 USDT | Min salgspris: 2,065.63
+[2026-03-31 06:43:44] VENTER | SOLUSDT | Pris: 83.36 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
+[2026-03-31 06:58:47] VENTER | ETHUSDT | Pris: 2,061.39 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 1 posisjon(er) for ETHUSDT – RSI=55.5, endring=-0.01% fra snitt
+[2026-03-31 06:58:47] VENTER | SOLUSDT | Pris: 83.38 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
