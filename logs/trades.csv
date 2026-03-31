@@ -615,3 +615,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-03-31 12:30:24,BTCUSDT,KJØP,66385.49,0.0015,99.58,0.0996,"RSI=31.6 < 55, DCA#1 | Handelsbeløp: 99.58 USDT | Min salgspris: 66,518.26",0.0,0.0,1
 2026-03-31 12:30:25,ETHUSDT,KJØP,2026.19,0.0493,99.89,0.0999,"RSI=35.1 < 55, DCA#1 | Handelsbeløp: 99.89 USDT | Min salgspris: 2,030.24",0.0,0.0,1
 2026-03-31 12:30:26,SOLUSDT,KJØP,80.76,1.238,99.98,0.1,"RSI=25.4 < 55, DCA#1 | Handelsbeløp: 99.98 USDT | Min salgspris: 80.92",0.0,0.0,1
+2026-03-31 12:45:32,BTCUSDT,KJØP,66274.41,0.0015,99.41,0.0994,"RSI=29.6 < 55, DCA#2 | Handelsbeløp: 99.41 USDT | Min salgspris: 66,406.96",0.0,0.0,2
+2026-03-31 12:45:33,ETHUSDT,KJØP,2023.74,0.0494,99.97,0.1,"RSI=33.6 < 55, DCA#2 | Handelsbeløp: 99.97 USDT | Min salgspris: 2,027.79",0.0,0.0,2
+2026-03-31 12:45:34,SOLUSDT,KJØP,80.44,1.243,99.99,0.1,"RSI=23.6 < 55, DCA#2 | Handelsbeløp: 99.99 USDT | Min salgspris: 80.60",0.0,0.0,2
+2026-03-31 13:00:38,BTCUSDT,KJØP,66362.17,0.0015,99.54,0.0995,"RSI=33.2 < 55, DCA#3 | Handelsbeløp: 99.54 USDT | Min salgspris: 66,494.89",0.0,0.0,3
+2026-03-31 13:00:39,ETHUSDT,KJØP,2025.05,0.0493,99.83,0.0998,"RSI=37.0 < 55, DCA#3 | Handelsbeløp: 99.83 USDT | Min salgspris: 2,029.10",0.0,0.0,3
+2026-03-31 13:00:40,SOLUSDT,KJØP,80.47,1.242,99.94,0.0999,"RSI=23.5 < 55, DCA#3 | Handelsbeløp: 99.94 USDT | Min salgspris: 80.63",0.0,0.0,3
