@@ -541,3 +541,7 @@
 [2026-03-31 03:27:43] VENTER | BTCUSDT | Pris: 67,241.65 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for BTCUSDT – RSI=63.1, endring=-0.50% fra snitt
 [2026-03-31 03:27:43] VENTER | ETHUSDT | Pris: 2,040.00 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for ETHUSDT – RSI=55.5, endring=0.75% fra snitt
 [2026-03-31 03:27:43] VENTER | SOLUSDT | Pris: 83.03 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Maks DCA-nivå (3) nådd for SOLUSDT – ingen ny kjøpsordre
+[2026-03-31 03:42:48] SELG   | BTCUSDT | Pris: 67,987.08 USDT | Coin: 0.004420 | Fee: 0.3005 USDT | DCA#3 | RSI=73.2 > 65, lønnsomt salg (snitt 67,581.29) | Resultat: +1.20 USDT (+0.600%)
+[2026-03-31 03:42:49] SELG   | ETHUSDT | Pris: 2,074.18 USDT | Coin: 0.148000 | Fee: 0.3070 USDT | DCA#3 | RSI=67.3 > 65, lønnsomt salg (snitt 2,024.89) | Resultat: +6.70 USDT (+2.434%)
+[2026-03-31 03:42:49] VENTER | SOLUSDT | Pris: 83.72 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 posisjon(er) for SOLUSDT – RSI=65.0, endring=1.14% fra snitt
+[2026-03-31 03:57:52] SELG   | SOLUSDT | Pris: 83.86 USDT | Coin: 3.623000 | Fee: 0.3036 USDT | DCA#3 | RSI=66.7 > 65, lønnsomt salg (snitt 82.78) | Resultat: +3.33 USDT (+1.309%)
