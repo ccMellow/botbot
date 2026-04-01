@@ -149,6 +149,12 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     for p in ema_periods:
         df[f"ema{p}"] = ta.trend.EMAIndicator(df["close"], window=p).ema_indicator()
 
+    # --- SMA (for MA_CROSS når ma_type=SMA) ---
+    active_name = get_config()["strategy"]["active"]
+    if active_name == "MA_CROSS" and s.get("ma_type", "EMA").upper() == "SMA":
+        for p in {s.get("fast_ma", 50), s.get("slow_ma", 200)}:
+            df[f"sma{p}"] = ta.trend.SMAIndicator(df["close"], window=p).sma_indicator()
+
     # --- Bollinger Bands ---
     bb_period = s.get("period", s.get("bb_period", 20))
     bb_std = float(s.get("std_dev", s.get("bb_std", 2.0)))
@@ -223,11 +229,29 @@ def _signal_macd(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     cross_down = (macd_prev > sig_prev) and (macd_curr <= sig_curr)
 
     buy = cross_up and rsi > s["rsi_buy"]
+
+    # histogram_filter: histogram (MACD - signal) må være positivt ved kjøp
+    if buy and s.get("histogram_filter", True):
+        if not (macd_curr - sig_curr) > 0:
+            buy = False
+
+    # zero_cross_filter: MACD-linjen må ligge over null-linjen ved kjøp
+    if buy and s.get("zero_cross_filter", False):
+        if not macd_curr > 0:
+            buy = False
+
     sell = cross_down
+
+    filters = []
+    if s.get("histogram_filter", True):
+        filters.append(f"hist={macd_curr - sig_curr:.4f}")
+    if s.get("zero_cross_filter", False):
+        filters.append(f"MACD={macd_curr:.4f}")
+    filter_str = f" | {', '.join(filters)}" if filters else ""
 
     buy_r = (
         f"MACD krysset over signallinje, "
-        f"RSI={rsi:.1f} > {s['rsi_buy']} (momentumbekreftelse)"
+        f"RSI={rsi:.1f} > {s['rsi_buy']}{filter_str}"
     )
     sell_r = f"MACD krysset under signallinje ({macd_curr:.4f} < {sig_curr:.4f})"
     return buy, buy_r, sell, sell_r
@@ -235,8 +259,10 @@ def _signal_macd(last, prev, s: dict) -> tuple[bool, str, bool, str]:
 
 def _signal_ma_cross(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     rsi = float(last["rsi"])
-    fast_key = f"ema{s['fast_ma']}"
-    slow_key = f"ema{s['slow_ma']}"
+    ma_type = s.get("ma_type", "EMA").upper()
+    prefix = ma_type.lower()  # "ema" eller "sma"
+    fast_key = f"{prefix}{s['fast_ma']}"
+    slow_key = f"{prefix}{s['slow_ma']}"
     fast_curr = float(last[fast_key])
     slow_curr = float(last[slow_key])
     fast_prev = float(prev[fast_key])
@@ -249,12 +275,12 @@ def _signal_ma_cross(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     sell = cross_down
 
     buy_r = (
-        f"EMA{s['fast_ma']} ({fast_curr:,.2f}) krysset over "
-        f"EMA{s['slow_ma']} ({slow_curr:,.2f}), RSI={rsi:.1f} < {s['rsi_buy']}"
+        f"{ma_type}{s['fast_ma']} ({fast_curr:,.2f}) krysset over "
+        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f}), RSI={rsi:.1f} < {s['rsi_buy']}"
     )
     sell_r = (
-        f"EMA{s['fast_ma']} ({fast_curr:,.2f}) krysset under "
-        f"EMA{s['slow_ma']} ({slow_curr:,.2f})"
+        f"{ma_type}{s['fast_ma']} ({fast_curr:,.2f}) krysset under "
+        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f})"
     )
     return buy, buy_r, sell, sell_r
 
@@ -266,13 +292,26 @@ def _signal_combined(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     bb_lower = float(last["bb_lower"])
     bb_upper = float(last["bb_upper"])
 
-    buy = rsi < s["rsi_buy"] and price > ema and price < bb_lower
+    rsi_ok = rsi < s["rsi_buy"]
+    ema_ok = price > ema
+    bb_ok = price < bb_lower
+    all_signals = [rsi_ok, ema_ok, bb_ok]
+    n_active = sum(all_signals)
+
+    min_signals = s.get("min_signals_to_buy", 3)
+    buy = n_active >= min_signals
     sell = rsi > s["rsi_sell"] or price > bb_upper
 
+    active_desc = []
+    if rsi_ok:
+        active_desc.append(f"RSI={rsi:.1f}<{s['rsi_buy']}")
+    if ema_ok:
+        active_desc.append(f"pris>EMA{s['ema_period']}")
+    if bb_ok:
+        active_desc.append(f"pris<BB_lower")
     buy_r = (
-        f"RSI={rsi:.1f} < {s['rsi_buy']}, "
-        f"pris {price:,.2f} > EMA{s['ema_period']} {ema:,.2f} "
-        f"og < BB_lower {bb_lower:,.2f}"
+        f"{n_active}/{len(all_signals)} signaler ({', '.join(active_desc) or 'ingen'}), "
+        f"krever {min_signals}"
     )
     sell_r = f"RSI={rsi:.1f} > {s['rsi_sell']} eller pris {price:,.2f} > BB_upper {bb_upper:,.2f}"
     return buy, buy_r, sell, sell_r
@@ -524,10 +563,9 @@ def _sell(state: CoinState, price: float, reason: str, client: Client) -> None:
     state.positions.clear()
 
     if "STOPLOSS" in reason:
-        cooldown_sec = trading.get("stop_loss_cooldown_minutes",
-                                   get_config()["safety"]["stop_loss_cooldown_minutes"]) * 60
-        state.stop_loss_cooldown_until = time.time() + cooldown_sec
+        cooldown_min = trading["cooldown_after_stoploss_min"]
+        state.stop_loss_cooldown_until = time.time() + cooldown_min * 60
         logger.info(
             f"Stoploss-cooldown aktivert for {symbol} – "
-            f"ingen kjøp de neste {int(cooldown_sec // 60)} minuttene."
+            f"ingen kjøp de neste {cooldown_min} minuttene."
         )

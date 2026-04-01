@@ -85,9 +85,11 @@ if __name__ == "__main__":
     run_strategy()
     hourly_push()
 
-    # Planlegg iterasjoner
+    # Planlegg iterasjoner (push-intervall leses fra config)
+    push_interval = get_config()["system"]["github_push_interval_min"]
     schedule.every(15).minutes.do(run_strategy)
-    schedule.every(30).minutes.do(hourly_push)
+    schedule.every(push_interval).minutes.do(hourly_push)
+    logger.info(f"Planlagt: strategi hvert 15. min, GitHub-push hvert {push_interval}. min")
 
     while True:
         schedule.run_pending()

@@ -60,11 +60,11 @@ Alle parametre og valg av aktiv strategi gjøres i `config.yaml`. Start boten p�
 ### Tilgjengelige strategier (velges med `strategy.active` i config.yaml)
 | Navn       | Kjøpssignal                                         | Salgssignal                          |
 |------------|-----------------------------------------------------|--------------------------------------|
-| RSI_EMA    | RSI < rsi_buy OG pris > EMA(ema_period)             | RSI > rsi_sell                       |
-| BOLLINGER  | Pris < BB_lower OG RSI < rsi_buy                    | Pris > BB_upper                      |
-| MACD       | MACD krysser over signal OG RSI > rsi_confirm       | MACD krysser under signal            |
-| MA_CROSS   | EMA(fast) krysser over EMA(slow) OG RSI < rsi_buy  | EMA(fast) krysser under EMA(slow)    |
-| COMBINED   | RSI < rsi_buy OG pris > EMA OG pris < BB_lower      | RSI > rsi_sell ELLER pris > BB_upper |
+| RSI_EMA    | RSI < rsi_buy OG pris > EMA(ema_period)                          | RSI > rsi_sell                       |
+| BOLLINGER  | Pris < BB_lower OG RSI < rsi_buy                                 | Pris > BB_upper                      |
+| MACD       | MACD krysser over signal OG RSI > rsi_confirm (+histogram/zero-filtre) | MACD krysser under signal      |
+| MA_CROSS   | MA(fast) krysser over MA(slow) OG RSI < rsi_buy (EMA eller SMA)  | MA(fast) krysser under MA(slow)      |
+| COMBINED   | N av 3 aktive: RSI < rsi_buy, pris > EMA, pris < BB_lower        | RSI > rsi_sell ELLER pris > BB_upper |
 
 ### Gjeldende implementasjon
 - Ordrer sendes til Binance Spot Testnet API (market orders) – faktiske fyllingsdata brukes
