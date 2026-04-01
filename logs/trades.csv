@@ -816,3 +816,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-04-01 07:06:01,BTCUSDT,VENTER,68303.83,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=61.0, endring=0.60% fra snitt",0.0,0.0,0
 2026-04-01 07:06:01,ETHUSDT,VENTER,2110.89,0.0,0.0,0.0,"Holder 3 posisjon(er) for ETHUSDT – RSI=61.6, endring=0.72% fra snitt",0.0,0.0,0
 2026-04-01 07:06:01,SOLUSDT,VENTER,83.7,0.0,0.0,0.0,"Holder 3 posisjon(er) for SOLUSDT – RSI=64.4, endring=3.90% fra snitt",0.0,0.0,0
+2026-04-01 07:21:05,BTCUSDT,VENTER,68370.99,0.0,0.0,0.0,"Holder 3 posisjon(er) for BTCUSDT – RSI=62.9, endring=0.70% fra snitt",0.0,0.0,0
+2026-04-01 07:21:05,ETHUSDT,VENTER,2113.26,0.0,0.0,0.0,"Holder 3 posisjon(er) for ETHUSDT – RSI=63.4, endring=0.84% fra snitt",0.0,0.0,0
+2026-04-01 07:21:05,SOLUSDT,VENTER,83.64,0.0,0.0,0.0,"Holder 3 posisjon(er) for SOLUSDT – RSI=62.7, endring=3.83% fra snitt",0.0,0.0,0
+2026-04-01 07:36:08,BTCUSDT,SELG,68609.0,0.0044,301.19,0.3012,"RSI=68.0 > 65, lønnsomt salg (snitt 67,895.42)",2.54,1.051,3
+2026-04-01 07:36:08,ETHUSDT,SELG,2129.16,0.1431,304.68,0.3047,"RSI=72.1 > 65, lønnsomt salg (snitt 2,095.75)",4.18,1.5942,3
+2026-04-01 07:36:08,SOLUSDT,SELG,84.07,3.723,312.74,0.3127,TAKEPROFIT utløst (4.29% fra snitt 80.56),12.48,4.3613,3
