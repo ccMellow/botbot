@@ -1,6 +1,8 @@
 """
 circuit_breaker.py
-Stopper all trading hvis total portefølje taper mer enn 5% på 24 timer.
+Stopper all trading hvis total portefølje taper mer enn konfigurerbar prosent på 24 timer.
+Terskelverdier leses fra config.yaml (safety.circuit_breaker_pct og
+safety.circuit_breaker_window_hours).
 """
 
 import logging
@@ -8,9 +10,6 @@ import time
 from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
-
-LOSS_THRESHOLD_PCT  = 0.05   # 5% tap utløser circuit breaker
-SNAPSHOT_WINDOW_SEC = 86400  # 24 timer — snapshot fornyes etter dette
 
 
 @dataclass
@@ -20,11 +19,21 @@ class CircuitBreakerState:
     snapshot_time: float = 0.0  # unix-timestamp, 0.0 = ingen snapshot ennå
 
 
-def check_and_update(current_value: float, state: CircuitBreakerState) -> bool:
+def check_and_update(
+    current_value: float,
+    state: CircuitBreakerState,
+    loss_threshold_pct: float,
+    snapshot_window_sec: int,
+) -> bool:
     """
-    Sjekk porteføljetap mot 24-timers snapshot.
-    Oppdaterer snapshot hvis 24 timer har gått.
+    Sjekk porteføljetap mot rullerende snapshot.
     Returnerer True hvis circuit breaker er utløst og trading skal stoppes.
+
+    Args:
+        current_value: Nåværende total porteføljeverdi i USDT.
+        state: Muterbar circuit breaker-tilstand (lagres i state.json).
+        loss_threshold_pct: f.eks. 0.05 for 5% tapsgrense.
+        snapshot_window_sec: f.eks. 86400 for 24-timers vindu.
     """
     if state.triggered:
         logger.critical(
@@ -40,24 +49,26 @@ def check_and_update(current_value: float, state: CircuitBreakerState) -> bool:
         state.snapshot_value = current_value
         state.snapshot_time = now
         logger.info(
-            f"Circuit breaker: 24t-snapshot tatt ({current_value:,.2f} USDT)"
+            f"Circuit breaker: {int(snapshot_window_sec // 3600)}t-snapshot tatt "
+            f"({current_value:,.2f} USDT)"
         )
         return False
 
     # Sjekk tap mot snapshot
     if state.snapshot_value > 0:
         loss_pct = (state.snapshot_value - current_value) / state.snapshot_value
-        if loss_pct >= LOSS_THRESHOLD_PCT:
+        if loss_pct >= loss_threshold_pct:
             state.triggered = True
             logger.critical(
                 f"CIRCUIT BREAKER UTLØST – portefølje ned {loss_pct * 100:.2f}% "
-                f"siste 24t: {state.snapshot_value:,.2f} → {current_value:,.2f} USDT "
-                f"(grense: {LOSS_THRESHOLD_PCT * 100:.0f}%). All trading stoppet."
+                f"siste {int(snapshot_window_sec // 3600)}t: "
+                f"{state.snapshot_value:,.2f} → {current_value:,.2f} USDT "
+                f"(grense: {loss_threshold_pct * 100:.0f}%). All trading stoppet."
             )
             return True
 
-    # Forny snapshot etter 24 timer
-    if now - state.snapshot_time >= SNAPSHOT_WINDOW_SEC:
+    # Forny snapshot etter konfigurert vindu
+    if now - state.snapshot_time >= snapshot_window_sec:
         logger.info(
             f"Circuit breaker: snapshot fornyet "
             f"({state.snapshot_value:,.2f} → {current_value:,.2f} USDT)"

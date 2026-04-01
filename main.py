@@ -1,15 +1,16 @@
 """
 main.py
 Hovedloop for trading-boten.
-Kjører strategien hvert 15. minutt for BTC, ETH og SOL.
-Pusher til GitHub hvert 30. minutt.
+Alle parametre leses fra config.yaml.
 """
 
 import logging
+import time as _time
 import schedule
 from dotenv import load_dotenv
 
-from bot.strategy import get_client, fetch_candles, compute_indicators, evaluate, CoinState, SYMBOLS
+from bot.config_loader import get_config
+from bot.strategy import get_client, fetch_candles, compute_indicators, evaluate, CoinState, get_symbols
 from bot.github_pusher import push_to_github
 from bot.status_writer import write_status
 from bot.state_manager import save_state
@@ -25,12 +26,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+SYMBOLS = get_symbols()
 states = {symbol: CoinState(symbol) for symbol in SYMBOLS}
 cb_state = CircuitBreakerState()
 
 
 def run_strategy():
     try:
+        cfg = get_config()
+        safety = cfg["safety"]
+        loss_threshold = safety["circuit_breaker_pct"]
+        snapshot_window = int(safety["circuit_breaker_window_hours"] * 3600)
+
         client = get_client()
 
         # Pass 1: hent candles og indikatorer for alle mynter
@@ -47,7 +54,7 @@ def run_strategy():
             for symbol in SYMBOLS
         )
 
-        if check_and_update(portfolio_value, cb_state):
+        if check_and_update(portfolio_value, cb_state, loss_threshold, snapshot_window):
             save_state(states, cb_state)
             return
 
@@ -82,7 +89,6 @@ if __name__ == "__main__":
     schedule.every(15).minutes.do(run_strategy)
     schedule.every(30).minutes.do(hourly_push)
 
-    import time
     while True:
         schedule.run_pending()
-        time.sleep(30)
+        _time.sleep(30)

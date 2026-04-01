@@ -28,12 +28,14 @@ Skal eventuelt flyttes til live Binance når testing er fullført.
 - Koden skal være modulær og lett å flytte mellom PC-er
 
 ## Filstruktur
-- bot/strategy.py        → trading logikk og indikatorer (multi-coin, DCA)
+- config.yaml            → ALLE parametre: mynter, strategi, trading, sikkerhet, system
+- bot/config_loader.py   → laster og cacher config.yaml
+- bot/strategy.py        → trading logikk, 5 strategier, ordre-sending
 - bot/logger.py          → CSV og tekstlogging
 - bot/github_pusher.py   → auto-push til GitHub hvert 30. minutt
 - bot/fee_calculator.py  → fee-logikk og lønnsomhetssjekk
-- bot/circuit_breaker.py  → circuit breaker (stopper trading ved >5% tap på 24t)
-- bot/startup_checks.py  → oppstartskontroller (API, .env, saldo, posisjoner, mode)
+- bot/circuit_breaker.py  → circuit breaker (stopper trading ved >N% tap på M timer)
+- bot/startup_checks.py  → oppstartskontroller og config-validering
 - bot/state_manager.py   → lagrer/gjenoppretter CoinState til/fra state.json
 - bot/status_writer.py   → skriver dashboard/status.json med posisjoner og saldo
 - dashboard/index.html   → hovedside (mobiloptimalisert)
@@ -49,27 +51,30 @@ Skal eventuelt flyttes til live Binance når testing er fullført.
 - .gitignore             → ekskluderer .env og sensitive filer
 
 ## Trading strategi
-Aktiv strategi defineres i bot/strategy.py.
-Boten handler multiple mynter simultant mot USDT på Binance Spot Testnet.
-Listen over aktive mynter kan utvides – se seksjonen "Legge til ny mynt" nedenfor.
+Alle parametre og valg av aktiv strategi gjøres i `config.yaml`. Start boten på nytt etter endringer.
 
 ### Gjeldende aktive mynter
 - BTCUSDT, ETHUSDT, SOLUSDT
-- Definert i `SYMBOLS`-listen i `bot/strategy.py` og `main.py`
+- Definert i `coins`-listen i `config.yaml`
+
+### Tilgjengelige strategier (velges med `strategy.active` i config.yaml)
+| Navn       | Kjøpssignal                                         | Salgssignal                          |
+|------------|-----------------------------------------------------|--------------------------------------|
+| RSI_EMA    | RSI < rsi_buy OG pris > EMA(ema_period)             | RSI > rsi_sell                       |
+| BOLLINGER  | Pris < BB_lower OG RSI < rsi_buy                    | Pris > BB_upper                      |
+| MACD       | MACD krysser over signal OG RSI > rsi_confirm       | MACD krysser under signal            |
+| MA_CROSS   | EMA(fast) krysser over EMA(slow) OG RSI < rsi_buy  | EMA(fast) krysser under EMA(slow)    |
+| COMBINED   | RSI < rsi_buy OG pris > EMA OG pris < BB_lower      | RSI > rsi_sell ELLER pris > BB_upper |
 
 ### Gjeldende implementasjon
-- Indikatorer: RSI(14) + EMA200
-- Kjøp: RSI < 35 OG pris > EMA200 → sender market buy-ordre til Binance (`quoteOrderQty`)
-- Selg: RSI > 65 ELLER stoploss (-2%) ELLER takeprofit (+4%) → sender market sell-ordre til Binance
-- DCA: opptil 3 åpne posisjoner per mynt, 100 USDT per kjøp
-- Kapitalreserve: 7000 USDT delt mellom ALLE aktive mynter – aldri bruk under dette
-- TEST_MODE=true: RSI < 55 og EMA200-filter deaktivert for alle mynter
-- Ordrer sendes til Binance Spot Testnet API – faktiske fyllingsdata brukes (fill_price, executedQty)
+- Ordrer sendes til Binance Spot Testnet API (market orders) – faktiske fyllingsdata brukes
 - Saldo hentes fra Binance etter hver syklus og reflekterer reelle ordre-utførelser
+- DCA: opptil `max_dca` åpne posisjoner per mynt, `trade_usdt` USDT per kjøp
+- Kapitalreserve: `capital_reserve` USDT delt mellom ALLE aktive mynter – aldri bruk under dette
 - Persistent state: åpne posisjoner, stoploss-cooldowns og circuit breaker-tilstand lagres til state.json etter hvert evalueringssyklus, gjenopprettes ved oppstart
-- Oppstartskontroller: internett → .env/nøkler → Binance API → state.json → posisjoner vs saldo → USDT-reserve → TEST_MODE (dynamisk). Kritiske feil stopper boten. TEST_MODE-sjekk vises bare hvis variabelen er definert i .env
-- Circuit breaker: stopper ALL trading hvis porteføljeverdi faller >5% på 24 timer. Nullstilles ved manuell restart. Tilstand lagres i state.json
-- Stoploss-cooldown: 30 minutters ventetid per mynt etter at stoploss er utløst. Lagres i state.json og overlever restart
+- Oppstartskontroller: internett → .env/nøkler → config.yaml → Binance API → state.json → posisjoner vs saldo → USDT-reserve. Kritiske feil stopper boten
+- Circuit breaker: stopper ALL trading hvis porteføljeverdi faller >N% på M timer (config: safety). Nullstilles ved manuell restart. Tilstand lagres i state.json
+- Stoploss-cooldown: konfigurerbar ventetid per mynt etter at stoploss er utløst. Lagres i state.json og overlever restart
 
 ### Krav til alle strategier
 - Må inkludere fee-kalkulator før hver handel
@@ -77,18 +82,18 @@ Listen over aktive mynter kan utvides – se seksjonen "Legge til ny mynt" neden
 - Alle beslutninger skal logges med begrunnelse
 - CoinState-klassen holder styr på åpne DCA-posisjoner per mynt
 
-### Legge til ny mynt – obligatoriske steg
-Ingen ny mynt skal legges til uten at ALLE disse stegene er fullført:
+### Legge til ny mynt — KUN disse stegene trengs
+For å legge til en ny mynt er det nok å endre `config.yaml` og dashboard-filer:
 
-1. **bot/strategy.py** — legg til `"XYZUSDT"` i `SYMBOLS`-listen
-2. **main.py** — verifiser at `SYMBOLS` importeres fra strategy.py (ingen separat liste)
-3. **dashboard/index.html** — legg til ticker-item, coin-section (stats, posisjoner, graf, logg) med riktig ID-prefix (`coin-XYZUSDT`, `XYZUSDT-*`)
+1. **config.yaml** — legg til `"XYZUSDT"` i `coins`-listen
+2. **config.yaml** — legg til presisjon i `quantity_precision` (valgfritt, standard er 5 desimaler)
+3. **dashboard/index.html** — legg til ticker-item og coin-page (`#page-XYZUSDT`) med riktig ID-prefix
 4. **dashboard/charts.js** — legg til symbolet i `SYMBOLS`- og `TICKER_SYMBOLS`-arrayene
 5. **dashboard/style.css** — legg til `.coin-xyz` fargekodet venstrekant
-6. **bot/status_writer.py** — legg til coin-ticker (f.eks. `"XYZ"`) i `BALANCE_ASSETS`-listen
-7. **Verifiser TEST_MODE** — sjekk at `TEST_MODE`-sjekken i `evaluate()` ikke er mynt-spesifikk (den er det ikke per i dag – ingen endring nødvendig)
-8. **Verifiser kapitalreserve** — `CAPITAL_RESERVE = 7000.0` er en fast grense uavhengig av antall mynter. Med flere mynter øker risikoen for at flere mynter handler samtidig. Vurder å justere `TRADE_USDT` eller `CAPITAL_RESERVE` ved behov.
-9. **Oppdater CLAUDE.md** — oppdater "Gjeldende aktive mynter" og status.json-eksempelet i denne filen
+6. **Verifiser kapitalreserve** — med flere mynter øker risikoen for samtidige handler. Vurder å justere `trade_usdt` eller `capital_reserve` i config.yaml
+7. **Oppdater CLAUDE.md** — oppdater "Gjeldende aktive mynter" i denne filen
+
+Ingen endringer i Python-koden er nødvendig for å legge til en ny mynt.
 
 ## Logging format
 CSV-kolonnene er:
@@ -198,19 +203,17 @@ Ingen endringer skal gjøres før brukeren eksplisitt bekrefter.
 
 2. **Bytt API-nøkler** — be brukeren oppgi live Binance API-nøkler (hentes fra binance.com → API Management), oppdater `.env` med nye verdier for `BINANCE_API_KEY` og `BINANCE_SECRET_KEY`
 
-3. **Bytt API-endepunkt** — i `bot/strategy.py`, endre `TESTNET = True` til `TESTNET = False`
+3. **Bytt API-endepunkt** — i `config.yaml`, endre `system.testnet: true` til `system.testnet: false`
 
-4. **Fjern TEST_MODE helt** — fjern fra `.env`, `.env.example`, og all kode i `bot/strategy.py`:
-   - Fjern `TEST_MODE`-konstanten
-   - Fjern alle `if TEST_MODE`-sjekker
-   - Sett `RSI_BUY = 35` hardkodet
-   - Fjern EMA200-bypass-logikken
+4. **Sett riktig strategi og parametre** — i `config.yaml`:
+   - Sett `strategy.active` til ønsket strategi (f.eks. `RSI_EMA`)
+   - Sjekk at `strategies.RSI_EMA.rsi_buy: 35` (normal produksjonsverdier)
 
 5. **Oppdater kapitalreserve** — spør brukeren: *"Hvor mange USDT vil du ha som minimum reserve?"*, oppdater `CAPITAL_RESERVE` i `bot/strategy.py` til det nye beløpet
 
 6. **Verifiser .gitignore** — sjekk at `.env` fortsatt er ekskludert i `.gitignore` før noen push
 
-7. **Oppdater CLAUDE.md** — oppdater "Status"-feltet over til `**LIVE TRADING** – ekte penger involvert`, oppdater kapitalreserve-beløpet i Trading strategi-seksjonen, fjern TEST_MODE-referanser
+7. **Oppdater CLAUDE.md** — oppdater "Status"-feltet over til `**LIVE TRADING** – ekte penger involvert`, oppdater kapitalreserve-beløpet i Trading strategi-seksjonen
 
 8. **Final push** — push oppdatert kode (uten `.env`) til GitHub
 

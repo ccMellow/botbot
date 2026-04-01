@@ -1,0 +1,117 @@
+# =============================================================================
+# Trading Bot – konfigurasjonsfil
+# Alle parametre for trading, strategi, sikkerhet og system styres herfra.
+# Start boten på nytt etter endringer.
+# =============================================================================
+
+system:
+  testnet: true         # true = Binance Spot Testnet, false = Live (ekte penger!)
+  log_level: INFO
+
+# =============================================================================
+# Mynter som handles. For å legge til en ny mynt: legg til symbolet her.
+# Sørg for å også legge til riktig presisjon i quantity_precision nedenfor.
+# =============================================================================
+coins:
+  - BTCUSDT
+  - ETHUSDT
+  - SOLUSDT
+
+# Antall desimaler for coin-mengde ved salgsordrer (trunkeres, ikke rundes).
+# Coins som IKKE er listet her bruker standardverdi 5.
+quantity_precision:
+  BTCUSDT: 5
+  ETHUSDT: 4
+  SOLUSDT: 2
+
+# =============================================================================
+# Aktiv strategi — bytt navn og restart boten for å endre strategi.
+# Tilgjengelige: RSI_EMA | BOLLINGER | MACD | MA_CROSS | COMBINED
+# =============================================================================
+strategy:
+  active: RSI_EMA
+
+# =============================================================================
+# Trading-parametre (felles for alle strategier)
+# =============================================================================
+trading:
+  trade_usdt: 100.0           # USDT per kjøpsordre
+  max_dca: 3                  # Maks antall åpne posisjoner per mynt (DCA-nivåer)
+  capital_reserve: 7000.0     # Minimum USDT-saldo — boten kjøper aldri under dette
+  take_profit_pct: 0.04       # Ta gevinst ved +4% fra snitt-inngangspris
+  stop_loss_pct: 0.02         # Stopp tap ved -2% fra snitt-inngangspris
+  candle_interval: "15m"      # Lysestake-intervall: 1m 3m 5m 15m 30m 1h 4h 1d
+  candle_limit: 250           # Antall lysestaker å hente (må dekke lengste indikatorperiode)
+
+# =============================================================================
+# Strategi-parametre — kun den aktive strategien brukes
+# =============================================================================
+strategies:
+
+  # RSI + EMA200-trend (standardstrategi)
+  # Kjøp: RSI underkjøpt OG pris over langsiktig trend (EMA200)
+  # Selg: RSI overkjøpt
+  RSI_EMA:
+    rsi_period: 14
+    rsi_buy: 35           # RSI under denne → kjøpssignal
+    rsi_sell: 65          # RSI over denne → salgssignal
+    ema_period: 200       # Trendfilter: kjøp kun når pris > EMA(ema_period)
+
+  # Bollinger Bands + RSI-filter
+  # Kjøp: pris under nedre Bollinger-band OG RSI underkjøpt
+  # Selg: pris over øvre Bollinger-band
+  BOLLINGER:
+    rsi_period: 14
+    rsi_buy: 40           # RSI under denne → bekrefter kjøpssignal
+    rsi_sell: 60          # Brukes for RSI-gauge i dashboard
+    period: 20            # Bollinger Band-periode
+    std_dev: 2.0          # Standardavvik for Bollinger-bredde
+
+  # MACD-crossover + RSI-momentumbekreftelse
+  # Kjøp: MACD krysser over signallinje OG RSI > rsi_confirm
+  # Selg: MACD krysser under signallinje
+  MACD:
+    rsi_period: 14
+    rsi_buy: 50           # rsi_confirm — RSI over dette bekrefter MACD-kjøpssignal
+    rsi_sell: 70          # Brukes for RSI-gauge i dashboard
+    fast: 12              # Rask EMA-periode for MACD
+    slow: 26              # Langsom EMA-periode for MACD
+    signal: 9             # Signallinje-periode
+
+  # Glidende gjennomsnitt-crossover + RSI-filter
+  # Kjøp: rask MA krysser over langsom MA OG RSI underkjøpt
+  # Selg: rask MA krysser under langsom MA
+  MA_CROSS:
+    rsi_period: 14
+    rsi_buy: 45           # RSI under denne → bekrefter kjøpssignal
+    rsi_sell: 55          # Brukes for RSI-gauge i dashboard
+    fast_ma: 50           # Rask MA-periode (EMA)
+    slow_ma: 200          # Langsom MA-periode (EMA)
+
+  # Kombinert strategi — alle indikatorer må stemme overens
+  # Kjøp: RSI underkjøpt OG pris over EMA (langsiktig trend) OG pris under BB_lower (kortsiktig dip)
+  # Selg: RSI overkjøpt ELLER pris over øvre Bollinger-band
+  COMBINED:
+    rsi_period: 14
+    rsi_buy: 35
+    rsi_sell: 65
+    ema_period: 200
+    bb_period: 20
+    bb_std: 2.0
+
+# =============================================================================
+# Sikkerhetsinnstillinger
+# =============================================================================
+safety:
+  circuit_breaker_pct: 0.05         # Stopp all trading ved >5% porteføljetap på 24t
+  circuit_breaker_window_hours: 24  # Vindu for circuit breaker-måling
+  stop_loss_cooldown_minutes: 30    # Ventetid etter stoploss før ny kjøpsordre
+
+# =============================================================================
+# Varslinger (fremtidig funksjonalitet)
+# =============================================================================
+notifications:
+  enabled: false
+  # email: ""
+  # telegram_token: ""
+  # telegram_chat_id: ""

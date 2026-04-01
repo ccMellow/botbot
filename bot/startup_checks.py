@@ -1,6 +1,6 @@
 """
 startup_checks.py
-Kjører en sekvens av oppstartskontroller før trading-loopen begynner.
+Kjører en sekvens av oppstartskontroller og config-validering før trading-loopen begynner.
 Stopper boten ved kritiske feil. Logger resultat for hvert steg.
 """
 
@@ -12,18 +12,31 @@ from datetime import datetime
 from binance.client import Client
 
 from bot.circuit_breaker import CircuitBreakerState
+from bot.config_loader import get_config, active_strategy_cfg
 from bot.state_manager import load_state
-from bot.strategy import CoinState, SYMBOLS, CAPITAL_RESERVE, TESTNET
+from bot.strategy import CoinState, TESTNET
 
 logger = logging.getLogger(__name__)
 
 REQUIRED_ENV_KEYS = ["BINANCE_API_KEY", "BINANCE_SECRET_KEY"]
 _SEP = "-" * 56
 
+# Anbefalte grenser for config-validator (advarsel ved avvik, ikke kritisk)
+_RANGES = {
+    "trading.trade_usdt":          (10.0,   10_000.0),
+    "trading.max_dca":             (1,      10),
+    "trading.capital_reserve":     (0.0,    None),
+    "trading.stop_loss_pct":       (0.005,  0.20),
+    "trading.take_profit_pct":     (0.005,  0.50),
+    "trading.candle_limit":        (50,     1000),
+    "safety.circuit_breaker_pct":  (0.01,   0.50),
+    "safety.stop_loss_cooldown_minutes": (0, 1440),
+}
+
 
 # ---------------------------------------------------------------------------
-# Individual checks — each returns (critical: bool, passed: bool, message: str)
-# critical=True means the bot must stop if passed=False
+# Individual checks — hvert returner (critical, passed, message)
+# critical=True → boten stopper hvis passed=False
 # ---------------------------------------------------------------------------
 
 def _check_internet() -> tuple[bool, bool, str]:
@@ -42,6 +55,71 @@ def _check_env() -> tuple[bool, bool, str]:
     if missing:
         return True, False, f"Manglende nøkler: {', '.join(missing)}"
     return True, True, "Alle påkrevde nøkler tilstede"
+
+
+def _check_config() -> tuple[bool, bool, str]:
+    """Valider config.yaml — sjekk at aktiv strategi finnes og verdier er i anbefalte grenser."""
+    try:
+        cfg = get_config()
+    except FileNotFoundError as e:
+        return True, False, str(e)
+    except Exception as e:
+        return True, False, f"Kunne ikke lese config.yaml: {e}"
+
+    warnings = []
+
+    # Aktiv strategi må finnes
+    active = cfg.get("strategy", {}).get("active", "")
+    known = list(cfg.get("strategies", {}).keys())
+    if active not in known:
+        return True, False, (
+            f"strategy.active='{active}' er ikke definert. "
+            f"Gyldige: {known}"
+        )
+
+    # Coins-liste kan ikke være tom
+    if not cfg.get("coins"):
+        return True, False, "coins-listen i config.yaml er tom – legg til minst én mynt"
+
+    # Sjekk numeriske grenser
+    trading = cfg.get("trading", {})
+    safety = cfg.get("safety", {})
+
+    sections = {
+        "trading": trading,
+        "safety": safety,
+    }
+    for key, (lo, hi) in _RANGES.items():
+        section, field = key.split(".")
+        val = sections.get(section, {}).get(field)
+        if val is None:
+            continue
+        if lo is not None and val < lo:
+            warnings.append(f"{key}={val} er lavere enn anbefalt minimum ({lo})")
+        if hi is not None and val > hi:
+            warnings.append(f"{key}={val} er høyere enn anbefalt maksimum ({hi})")
+
+    # RSI buy < RSI sell for aktiv strategi
+    try:
+        s = active_strategy_cfg()
+        rsi_buy = s.get("rsi_buy", s.get("rsi_confirm"))
+        rsi_sell = s.get("rsi_sell")
+        if rsi_buy is not None and rsi_sell is not None and rsi_buy >= rsi_sell:
+            warnings.append(
+                f"{active}: rsi_buy ({rsi_buy}) må være lavere enn rsi_sell ({rsi_sell})"
+            )
+    except Exception:
+        pass
+
+    if warnings:
+        for w in warnings:
+            logger.warning(f"  [!]  config.yaml: {w}")
+        return False, False, f"{len(warnings)} advarsel(er) i config.yaml – se over"
+
+    return False, True, (
+        f"OK – aktiv strategi: {active} | "
+        f"{len(cfg['coins'])} mynt(er): {', '.join(cfg['coins'])}"
+    )
 
 
 def _check_api(client: Client) -> tuple[bool, bool, str]:
@@ -80,7 +158,7 @@ def _check_positions_vs_balances(
         asset = symbol.replace("USDT", "")
         held = balances.get(asset, 0.0)
         expected = state.total_coin_amount
-        if held < expected * 0.99:  # 1% tolerance for avrunding
+        if held < expected * 0.99:
             mismatches.append(
                 f"{asset}: forventer {expected:.6f}, Binance har {held:.6f}"
             )
@@ -91,28 +169,18 @@ def _check_positions_vs_balances(
 
 
 def _check_usdt_reserve(balances: dict[str, float]) -> tuple[bool, bool, str]:
+    capital_reserve = get_config()["trading"]["capital_reserve"]
     usdt = balances.get("USDT", 0.0)
-    if usdt < CAPITAL_RESERVE:
-        available = usdt - CAPITAL_RESERVE
+    if usdt < capital_reserve:
+        available = usdt - capital_reserve
         return False, False, (
-            f"Saldo {usdt:,.2f} USDT er under reserve {CAPITAL_RESERVE:,.0f} USDT "
+            f"Saldo {usdt:,.2f} USDT er under reserve {capital_reserve:,.0f} USDT "
             f"({available:,.2f} tilgjengelig) – ingen kjøp vil bli utført"
         )
-    available = usdt - CAPITAL_RESERVE
+    available = usdt - capital_reserve
     return False, True, (
         f"Saldo {usdt:,.2f} USDT | {available:,.2f} tilgjengelig over reserve"
     )
-
-
-def _check_test_mode() -> tuple[bool, bool, str] | None:
-    """Returnerer None hvis TEST_MODE ikke er definert i miljøet (funksjonen ikke aktiv)."""
-    raw = os.getenv("TEST_MODE")
-    if raw is None:
-        return None
-    active = raw.strip().lower() == "true"
-    if active:
-        return False, True, "AKTIV – RSI_BUY=55, EMA200-filter deaktivert"
-    return False, True, "Inaktiv – full strategi (RSI_BUY=35, EMA200 på)"
 
 
 # ---------------------------------------------------------------------------
@@ -136,6 +204,7 @@ def _log_startup_summary(
     states: dict[str, CoinState],
     cb_state: CircuitBreakerState,
 ) -> None:
+    cfg = get_config()
     mode_line = (
         "*** TESTNET ***  (ingen ekte penger)"
         if TESTNET
@@ -145,8 +214,9 @@ def _log_startup_summary(
     logger.info("  OPPSTARTSSTATUS")
     logger.info(_SEP)
     logger.info(f"  Modus     : {mode_line}")
+    logger.info(f"  Strategi  : {cfg['strategy']['active']}")
     logger.info(f"  Tidspunkt : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    logger.info(f"  Mynter    : {', '.join(SYMBOLS)}")
+    logger.info(f"  Mynter    : {', '.join(cfg['coins'])}")
 
     open_count = sum(1 for s in states.values() if s.in_position)
     if open_count == 0:
@@ -165,14 +235,15 @@ def _log_startup_summary(
         logger.critical("  CIRCUIT BREAKER: AKTIV – trading er stoppet!")
     elif cb_state.snapshot_time > 0:
         logger.info(
-            f"  Circuit br. : snapshot {cb_state.snapshot_value:,.2f} USDT (24t-vindu)"
+            f"  Circuit br. : snapshot {cb_state.snapshot_value:,.2f} USDT "
+            f"({int(cfg['safety']['circuit_breaker_window_hours'])}t-vindu)"
         )
 
     logger.info(_SEP)
 
 
 # ---------------------------------------------------------------------------
-# Main entry point
+# Hovedfunksjon
 # ---------------------------------------------------------------------------
 
 def run_startup_checks(
@@ -202,6 +273,12 @@ def run_startup_checks(
     if crit and not passed:
         critical_failed = True
 
+    # --- config.yaml (kritisk ved ugyldig strategi/tom coins-liste) ---
+    crit, passed, msg = _check_config()
+    _log_result("config.yaml", passed, crit, msg)
+    if crit and not passed:
+        critical_failed = True
+
     # --- Binance API (kritisk) ---
     crit, passed, msg = _check_api(client)
     _log_result("Binance API", passed, crit, msg)
@@ -218,7 +295,7 @@ def run_startup_checks(
             logger.error(f"  [!!] Kunne ikke hente Binance-saldo: {e}")
             critical_failed = True
 
-    # --- state.json — laster posisjoner, cooldowns og circuit breaker (advarsel ved feil) ---
+    # --- state.json — laster posisjoner, cooldowns og circuit breaker ---
     crit, passed, msg = _check_state(states, cb_state)
     _log_result("state.json", passed, crit, msg)
 
@@ -231,12 +308,6 @@ def run_startup_checks(
     if balances:
         crit, passed, msg = _check_usdt_reserve(balances)
         _log_result("USDT-reserve", passed, crit, msg)
-
-    # --- TEST_MODE (dynamisk – vises bare hvis variabelen er definert i .env) ---
-    test_result = _check_test_mode()
-    if test_result is not None:
-        crit, passed, msg = test_result
-        _log_result("TEST_MODE", passed, crit, msg)
 
     logger.info(_SEP)
 
