@@ -31,6 +31,8 @@ def save_state(states: dict[str, CoinState], cb_state: CircuitBreakerState) -> N
                 for p in state.positions
             ],
             "stop_loss_cooldown_until": state.stop_loss_cooldown_until,
+            "daily_buy_count": state.daily_buy_count,
+            "daily_buy_date": state.daily_buy_date,
         }
     data["_circuit_breaker"] = {
         "triggered": cb_state.triggered,
@@ -73,6 +75,8 @@ def load_state(
             ))
 
         state.stop_loss_cooldown_until = coin_data.get("stop_loss_cooldown_until", 0.0)
+        state.daily_buy_count = coin_data.get("daily_buy_count", 0)
+        state.daily_buy_date = coin_data.get("daily_buy_date", "")
 
         if state.dca_count > 0:
             coin = symbol.replace("USDT", "")

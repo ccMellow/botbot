@@ -75,6 +75,10 @@ Alle parametre og valg av aktiv strategi gjøres i `config.yaml`. Start boten p�
 - Oppstartskontroller: internett → .env/nøkler → config.yaml → Binance API → state.json → posisjoner vs saldo → USDT-reserve. Kritiske feil stopper boten
 - Circuit breaker: stopper ALL trading hvis porteføljeverdi faller >N% på M timer (config: safety). Nullstilles ved manuell restart. Tilstand lagres i state.json
 - Stoploss-cooldown: konfigurerbar ventetid per mynt etter at stoploss er utløst. Lagres i state.json og overlever restart
+- max_daily_trades: maks kjøp per mynt per kalenderdag (0 = ubegrenset). Teller lagres i state.json og nullstilles automatisk ved midnatt
+- volatility_pause: hvis aktivert, pauses kjøp for en mynt dersom siste lysestake endret seg mer enn `volatility_threshold`% (åpning til lukking). Nullstilles neste syklus om volatilitet normaliseres
+- squeeze_filter (BOLLINGER): kjøp kun etter BB-squeeze, dvs. BB-bredde var under glidende snitt forrige lys og ekspanderer nå
+- confirmation_candles (MA_CROSS): crossover må holde i N lys før kjøp bekreftes (1 = standard oppførsel)
 
 ### Krav til alle strategier
 - Må inkludere fee-kalkulator før hver handel

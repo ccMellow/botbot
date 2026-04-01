@@ -68,7 +68,7 @@ strategies:
     rsi_sell: 60          # Brukes for RSI-gauge i dashboard
     period: 20            # Bollinger Band-periode
     std_dev: 2.0          # Standardavvik for Bollinger-bredde
-    squeeze_filter: false # [fremtidig] true = kjøp kun etter volatilitetssammentrekning (BB-squeeze)
+    squeeze_filter: false # true = kjøp kun etter volatilitetssammentrekning (BB-squeeze)
 
   # MACD-crossover + RSI-momentumbekreftelse
   # Kjøp: MACD krysser over signallinje OG RSI > rsi_confirm (OG valgfrie filtre)
@@ -93,7 +93,7 @@ strategies:
     fast_ma: 50           # Rask MA-periode
     slow_ma: 200          # Langsom MA-periode
     ma_type: EMA          # MA-type: EMA (eksponentielt) eller SMA (enkelt glidende snitt)
-    confirmation_candles: 1  # [fremtidig] Antall lys crossover må holde før kjøp bekreftes
+    confirmation_candles: 1  # Antall lys crossover må holde før kjøp bekreftes
 
   # Kombinert strategi — N av 3 indikatorer må stemme overens
   # Kjøp: minst min_signals_to_buy av [RSI underkjøpt, pris > EMA, pris < BB_lower] er sanne
@@ -113,9 +113,9 @@ strategies:
 safety:
   circuit_breaker_pct: 0.05         # Stopp all trading ved >5% porteføljetap på 24t
   circuit_breaker_window_hours: 24  # Vindu for circuit breaker-måling
-  max_daily_trades: 20              # [fremtidig] Maks handler per dag per mynt (0 = ubegrenset)
-  volatility_pause: false           # [fremtidig] true = pause trading ved ekstrem volatilitet
-  volatility_threshold: 10.0        # [fremtidig] Volatilitet i % som utløser pause (brukes hvis volatility_pause=true)
+  max_daily_trades: 20              # Maks kjøp per dag per mynt (0 = ubegrenset)
+  volatility_pause: false           # true = pause kjøp ved ekstrem volatilitet (enkelt lys > threshold%)
+  volatility_threshold: 10.0        # Volatilitet i % som utløser pause (brukes hvis volatility_pause=true)
 
 # =============================================================================
 # Varslinger (fremtidig funksjonalitet)

@@ -13,6 +13,7 @@ import math
 import os
 import time
 from dataclasses import dataclass
+from datetime import date
 
 from binance.client import Client
 from dotenv import load_dotenv
@@ -75,6 +76,9 @@ class CoinState:
         self.last_rsi: float = 0.0
         self.last_ema200: float = 0.0
         self.stop_loss_cooldown_until: float = 0.0  # unix-timestamp, 0 = ingen cooldown
+        self.daily_buy_count: int = 0               # kjøp gjort i dag
+        self.daily_buy_date: str = ""               # dato for siste telledag (YYYY-MM-DD)
+        self.volatility_paused: bool = False        # True = kjøp pauset pga. høy volatilitet
 
     @property
     def dca_count(self) -> int:
@@ -123,6 +127,7 @@ def fetch_candles(client: Client, symbol: str) -> pd.DataFrame:
         "open_time", "open", "high", "low", "close", "volume",
         "close_time", "quote_vol", "trades", "taker_base", "taker_quote", "ignore"
     ])
+    df["open"] = df["open"].astype(float)
     df["close"] = df["close"].astype(float)
     df["high"] = df["high"].astype(float)
     df["low"] = df["low"].astype(float)
@@ -150,7 +155,7 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
         df[f"ema{p}"] = ta.trend.EMAIndicator(df["close"], window=p).ema_indicator()
 
     # --- SMA (for MA_CROSS når ma_type=SMA) ---
-    active_name = get_config()["strategy"]["active"]
+    active_name = cfg["strategy"]["active"]
     if active_name == "MA_CROSS" and s.get("ma_type", "EMA").upper() == "SMA":
         for p in {s.get("fast_ma", 50), s.get("slow_ma", 200)}:
             df[f"sma{p}"] = ta.trend.SMAIndicator(df["close"], window=p).sma_indicator()
@@ -162,15 +167,18 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df["bb_upper"] = bb.bollinger_hband()
     df["bb_lower"] = bb.bollinger_lband()
     df["bb_mid"] = bb.bollinger_mavg()
+    # BB-bredde brukes av squeeze_filter (BOLLINGER-strategi)
+    df["bb_width"] = (df["bb_upper"] - df["bb_lower"]) / df["bb_mid"]
+    df["bb_width_ma"] = df["bb_width"].rolling(bb_period).mean()
 
     # --- MACD ---
     macd_fast = s.get("fast", s.get("macd_fast", 12))
     macd_slow = s.get("slow", s.get("macd_slow", 26))
     macd_sig = s.get("signal", s.get("macd_signal", 9))
-    macd_ind = ta.trend.MACDIndicator(
+    macd_ind = ta.trend.MACD(
         df["close"],
-        window_fast=macd_fast,
         window_slow=macd_slow,
+        window_fast=macd_fast,
         window_sign=macd_sig,
     )
     df["macd"] = macd_ind.macd()
@@ -181,11 +189,13 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
 # ---------------------------------------------------------------------------
 # Strategi-signalfunksjoner
+# Alle tar (rows, s) der rows er en DataFrame-slice med bekreftede lys.
+# rows.iloc[-1] = siste bekreftede lys, rows.iloc[-2] = forrige lys.
 # Returnerer: (buy_signal, buy_reason, sell_signal, sell_reason)
-# last = df.iloc[-2] (siste bekreftede lys), prev = df.iloc[-3] (forrige lys)
 # ---------------------------------------------------------------------------
 
-def _signal_rsi_ema(last, prev, s: dict) -> tuple[bool, str, bool, str]:
+def _signal_rsi_ema(rows: pd.DataFrame, s: dict) -> tuple[bool, str, bool, str]:
+    last = rows.iloc[-1]
     rsi = float(last["rsi"])
     price = float(last["close"])
     ema = float(last[f"ema{s['ema_period']}"])
@@ -201,7 +211,8 @@ def _signal_rsi_ema(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     return buy, buy_r, sell, sell_r
 
 
-def _signal_bollinger(last, prev, s: dict) -> tuple[bool, str, bool, str]:
+def _signal_bollinger(rows: pd.DataFrame, s: dict) -> tuple[bool, str, bool, str]:
+    last = rows.iloc[-1]
     rsi = float(last["rsi"])
     price = float(last["close"])
     bb_lower = float(last["bb_lower"])
@@ -210,15 +221,31 @@ def _signal_bollinger(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     buy = price < bb_lower and rsi < s["rsi_buy"]
     sell = price > bb_upper
 
+    # squeeze_filter: kjøp kun etter BB-squeeze (bands trange → begynner å utvide seg)
+    if buy and s.get("squeeze_filter", False):
+        prev = rows.iloc[-2]
+        bb_w_now = float(last["bb_width"])
+        bb_w_ma_now = float(last["bb_width_ma"])
+        bb_w_prev = float(prev["bb_width"])
+        bb_w_ma_prev = float(prev["bb_width_ma"])
+        # Squeeze: forrige lys hadde width <= ma (squeezet), nåværende > ma (ekspansjon starter)
+        squeeze_expanding = (bb_w_prev <= bb_w_ma_prev) and (bb_w_now > bb_w_ma_now)
+        if not squeeze_expanding:
+            buy = False
+
     buy_r = (
         f"RSI={rsi:.1f} < {s['rsi_buy']}, "
         f"pris {price:,.2f} < BB_lower {bb_lower:,.2f}"
     )
+    if s.get("squeeze_filter", False):
+        buy_r += " | squeeze-filter aktiv"
     sell_r = f"Pris {price:,.2f} > BB_upper {bb_upper:,.2f}"
     return buy, buy_r, sell, sell_r
 
 
-def _signal_macd(last, prev, s: dict) -> tuple[bool, str, bool, str]:
+def _signal_macd(rows: pd.DataFrame, s: dict) -> tuple[bool, str, bool, str]:
+    last = rows.iloc[-1]
+    prev = rows.iloc[-2]
     rsi = float(last["rsi"])
     macd_curr = float(last["macd"])
     sig_curr = float(last["macd_signal"])
@@ -257,35 +284,63 @@ def _signal_macd(last, prev, s: dict) -> tuple[bool, str, bool, str]:
     return buy, buy_r, sell, sell_r
 
 
-def _signal_ma_cross(last, prev, s: dict) -> tuple[bool, str, bool, str]:
-    rsi = float(last["rsi"])
+def _signal_ma_cross(rows: pd.DataFrame, s: dict) -> tuple[bool, str, bool, str]:
     ma_type = s.get("ma_type", "EMA").upper()
-    prefix = ma_type.lower()  # "ema" eller "sma"
+    prefix = ma_type.lower()
     fast_key = f"{prefix}{s['fast_ma']}"
     slow_key = f"{prefix}{s['slow_ma']}"
+    confirmation = s.get("confirmation_candles", 1)
+
+    last = rows.iloc[-1]
+    rsi = float(last["rsi"])
     fast_curr = float(last[fast_key])
     slow_curr = float(last[slow_key])
-    fast_prev = float(prev[fast_key])
-    slow_prev = float(prev[slow_key])
 
-    cross_up = (fast_prev < slow_prev) and (fast_curr >= slow_curr)
-    cross_down = (fast_prev > slow_prev) and (fast_curr <= slow_curr)
+    if len(rows) < confirmation + 1:
+        return False, "Ikke nok data for confirmation_candles", False, ""
+
+    # Crossover skal ha skjedd ved rows[-(confirmation+1)] → rows[-confirmation]
+    before_cross = rows.iloc[-(confirmation + 1)]
+    at_cross = rows.iloc[-confirmation]
+
+    cross_up = (
+        float(before_cross[fast_key]) < float(before_cross[slow_key])
+        and float(at_cross[fast_key]) >= float(at_cross[slow_key])
+    )
+    cross_down = (
+        float(before_cross[fast_key]) > float(before_cross[slow_key])
+        and float(at_cross[fast_key]) <= float(at_cross[slow_key])
+    )
+
+    # Verifiser at crossover er opprettholdt frem til siste lys
+    if cross_up and confirmation > 1:
+        cross_up = all(
+            float(rows.iloc[i][fast_key]) >= float(rows.iloc[i][slow_key])
+            for i in range(-confirmation, 0)
+        )
+    if cross_down and confirmation > 1:
+        cross_down = all(
+            float(rows.iloc[i][fast_key]) <= float(rows.iloc[i][slow_key])
+            for i in range(-confirmation, 0)
+        )
 
     buy = cross_up and rsi < s["rsi_buy"]
     sell = cross_down
 
+    conf_str = f" (bekreftet over {confirmation} lys)" if confirmation > 1 else ""
     buy_r = (
         f"{ma_type}{s['fast_ma']} ({fast_curr:,.2f}) krysset over "
-        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f}), RSI={rsi:.1f} < {s['rsi_buy']}"
+        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f}), RSI={rsi:.1f} < {s['rsi_buy']}{conf_str}"
     )
     sell_r = (
         f"{ma_type}{s['fast_ma']} ({fast_curr:,.2f}) krysset under "
-        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f})"
+        f"{ma_type}{s['slow_ma']} ({slow_curr:,.2f}){conf_str}"
     )
     return buy, buy_r, sell, sell_r
 
 
-def _signal_combined(last, prev, s: dict) -> tuple[bool, str, bool, str]:
+def _signal_combined(rows: pd.DataFrame, s: dict) -> tuple[bool, str, bool, str]:
+    last = rows.iloc[-1]
     rsi = float(last["rsi"])
     price = float(last["close"])
     ema = float(last[f"ema{s['ema_period']}"])
@@ -318,27 +373,35 @@ def _signal_combined(last, prev, s: dict) -> tuple[bool, str, bool, str]:
 
 
 _STRATEGY_DISPATCH = {
-    "RSI_EMA":  _signal_rsi_ema,
+    "RSI_EMA":   _signal_rsi_ema,
     "BOLLINGER": _signal_bollinger,
-    "MACD":     _signal_macd,
-    "MA_CROSS": _signal_ma_cross,
-    "COMBINED": _signal_combined,
+    "MACD":      _signal_macd,
+    "MA_CROSS":  _signal_ma_cross,
+    "COMBINED":  _signal_combined,
 }
 
 
-def _dispatch_strategy(last, prev, s: dict, name: str) -> tuple[bool, str, bool, str]:
+def _dispatch_strategy(rows: pd.DataFrame, s: dict, name: str) -> tuple[bool, str, bool, str]:
     fn = _STRATEGY_DISPATCH.get(name)
     if fn is None:
         raise ValueError(
             f"Ukjent strategi '{name}'. "
             f"Gyldige: {list(_STRATEGY_DISPATCH.keys())}"
         )
-    return fn(last, prev, s)
+    return fn(rows, s)
 
 
 # ---------------------------------------------------------------------------
-# Ordre-hjelpere
+# Hjelpe-funksjoner
 # ---------------------------------------------------------------------------
+
+def _check_and_reset_daily_count(state: CoinState) -> None:
+    """Nullstill daglig kjøpsteller dersom datoen har endret seg."""
+    today = date.today().isoformat()
+    if state.daily_buy_date != today:
+        state.daily_buy_count = 0
+        state.daily_buy_date = today
+
 
 def _get_usdt_balance(client: Client) -> float:
     balances = client.get_account()["balances"]
@@ -407,11 +470,12 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
     """
     cfg = _cfg()
     trading = cfg["trading"]
+    safety = cfg["safety"]
     active_name = cfg["strategy"]["active"]
     s = active_strategy_cfg()
 
+    # Siste bekreftede lys (ekskluder åpent nåværende lys = df.iloc[-1])
     last = df.iloc[-2]
-    prev = df.iloc[-3]
     price = float(last["close"])
     symbol = state.symbol
 
@@ -426,9 +490,33 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
     ema200_raw = last.get("ema200", float("nan"))
     state.last_ema200 = round(float(ema200_raw), 4) if not pd.isna(ema200_raw) else 0.0
 
+    # Daglig kjøpsteller: nullstill ved midnatt
+    _check_and_reset_daily_count(state)
+
+    # Volatilitetssjekk: pause kjøp hvis siste lysestake hadde > threshold% kursendring
+    if safety.get("volatility_pause", False):
+        open_price = float(last["open"])
+        candle_change_pct = abs(price - open_price) / open_price * 100
+        threshold = float(safety.get("volatility_threshold", 10.0))
+        if candle_change_pct >= threshold:
+            if not state.volatility_paused:
+                logger.warning(
+                    f"{symbol}: Volatilitetssjekk – lys-endring {candle_change_pct:.2f}% "
+                    f">= {threshold:.1f}%. Pauserer kjøp."
+                )
+            state.volatility_paused = True
+        else:
+            state.volatility_paused = False
+
+    # Bygg rader for strategi-funksjoner (bekreftede lys, ekskluder åpent lys)
+    # Window: confirmation_candles + 2 gir nok rader for crossover-sjekk
+    confirmation = s.get("confirmation_candles", 1)
+    window = confirmation + 2
+    rows = df.iloc[-window:-1]
+
     # Hent signaler fra aktiv strategi
     try:
-        buy_sig, buy_reason, sell_sig, sell_reason = _dispatch_strategy(last, prev, s, active_name)
+        buy_sig, buy_reason, sell_sig, sell_reason = _dispatch_strategy(rows, s, active_name)
     except Exception as e:
         log_decision("VENTER", price, symbol=symbol, grunn=f"Strategifeil: {e}")
         return
@@ -461,6 +549,7 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
 
     # --- Kjøpssignal (kjører også ved DCA på eksisterende posisjon) ---
     if buy_sig and not sell_sig:
+        max_daily = int(safety.get("max_daily_trades", 0))
         if state.dca_count >= trading["max_dca"]:
             log_decision("VENTER", price, symbol=symbol,
                          grunn=f"Maks DCA ({trading['max_dca']}) nådd – ingen ny kjøpsordre")
@@ -468,6 +557,13 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
             remaining = (state.stop_loss_cooldown_until - time.time()) / 60
             log_decision("VENTER", price, symbol=symbol,
                          grunn=f"Stoploss-cooldown aktiv – {remaining:.0f} min igjen")
+        elif state.volatility_paused:
+            log_decision("VENTER", price, symbol=symbol,
+                         grunn=f"Volatilitetssjekk: kjøp pauset (lys-endring over "
+                               f"{safety.get('volatility_threshold', 10.0):.1f}%)")
+        elif max_daily > 0 and state.daily_buy_count >= max_daily:
+            log_decision("VENTER", price, symbol=symbol,
+                         grunn=f"Maks daglige handler ({max_daily}) nådd for {symbol}")
         else:
             usdt_balance = _get_usdt_balance(client)
             usable = usdt_balance - trading["capital_reserve"]
@@ -530,6 +626,8 @@ def _buy(
         usdt_amount=order["usdt_amount"],
         dca_level=dca_level,
     ))
+    state.daily_buy_count += 1
+    state.daily_buy_date = date.today().isoformat()
 
 
 def _sell(state: CoinState, price: float, reason: str, client: Client) -> None:
