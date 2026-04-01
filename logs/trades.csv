@@ -822,3 +822,4 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-04-01 07:36:08,BTCUSDT,SELG,68609.0,0.0044,301.19,0.3012,"RSI=68.0 > 65, lønnsomt salg (snitt 67,895.42)",2.54,1.051,3
 2026-04-01 07:36:08,ETHUSDT,SELG,2129.16,0.1431,304.68,0.3047,"RSI=72.1 > 65, lønnsomt salg (snitt 2,095.75)",4.18,1.5942,3
 2026-04-01 07:36:08,SOLUSDT,SELG,84.07,3.723,312.74,0.3127,TAKEPROFIT utløst (4.29% fra snitt 80.56),12.48,4.3613,3
+2026-04-01 10:06:46,SOLUSDT,KJØP,83.81,1.193,99.99,0.1,"RSI=51.8 < 55, DCA#1 | Handelsbeløp: 99.99 USDT | Min salgspris: 83.98",0.0,0.0,1

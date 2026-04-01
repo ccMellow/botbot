@@ -1,10 +1,10 @@
 {
-  "updated": "2026-04-01 09:36:39",
+  "updated": "2026-04-01 10:06:47",
   "balances": {
     "BTC": 1.006,
-    "USDT": 8419.2724267,
+    "USDT": 8319.2870967,
     "ETH": 1.2474,
-    "SOL": 13.447
+    "SOL": 14.64
   },
   "positions": {
     "BTCUSDT": {
@@ -16,43 +16,55 @@
       "entries": []
     },
     "SOLUSDT": {
-      "dca_count": 0,
-      "entries": []
+      "dca_count": 1,
+      "avg_entry_price": 83.81,
+      "take_profit_price": 87.1624,
+      "stop_loss_price": 82.1338,
+      "total_coin": 1.193,
+      "total_usdt": 99.99,
+      "entries": [
+        {
+          "dca_level": 1,
+          "entry_price": 83.81,
+          "coin_amount": 1.193,
+          "usdt_amount": 99.99
+        }
+      ]
     }
   },
   "indicators": {
     "BTCUSDT": {
-      "price": 68896.74,
-      "rsi": 63.42,
-      "ema200": 67512.1933,
+      "price": 68675.54,
+      "rsi": 55.63,
+      "ema200": 67548.2826,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 8.42,
-      "rsi_to_sell": 1.58,
+      "rsi_to_buy": 0.63,
+      "rsi_to_sell": 9.37,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 2.05
+      "price_vs_ema200_pct": 1.67
     },
     "ETHUSDT": {
-      "price": 2139.34,
-      "rsi": 63.72,
-      "ema200": 2069.8632,
+      "price": 2130.87,
+      "rsi": 56.33,
+      "ema200": 2071.5444,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 8.72,
-      "rsi_to_sell": 1.28,
+      "rsi_to_buy": 1.33,
+      "rsi_to_sell": 8.67,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 3.36
+      "price_vs_ema200_pct": 2.86
     },
     "SOLUSDT": {
-      "price": 84.23,
-      "rsi": 61.01,
-      "ema200": 82.7676,
+      "price": 83.84,
+      "rsi": 51.8,
+      "ema200": 82.8183,
       "rsi_buy_threshold": 55,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 6.01,
-      "rsi_to_sell": 3.99,
+      "rsi_to_buy": -3.2,
+      "rsi_to_sell": 13.2,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 1.77
+      "price_vs_ema200_pct": 1.23
     }
   }
 }

@@ -829,3 +829,4 @@
 [2026-04-01 07:36:08] SELG   | BTCUSDT | Pris: 68,609.00 USDT | Coin: 0.004400 | Fee: 0.3012 USDT | DCA#3 | RSI=68.0 > 65, lønnsomt salg (snitt 67,895.42) | Resultat: +2.54 USDT (+1.051%)
 [2026-04-01 07:36:08] SELG   | ETHUSDT | Pris: 2,129.16 USDT | Coin: 0.143100 | Fee: 0.3047 USDT | DCA#3 | RSI=72.1 > 65, lønnsomt salg (snitt 2,095.75) | Resultat: +4.18 USDT (+1.594%)
 [2026-04-01 07:36:08] SELG   | SOLUSDT | Pris: 84.07 USDT | Coin: 3.723000 | Fee: 0.3127 USDT | DCA#3 | TAKEPROFIT utløst (4.29% fra snitt 80.56) | Resultat: +12.48 USDT (+4.361%)
+[2026-04-01 10:06:46] KJØP   | SOLUSDT | Pris: 83.81 USDT | Coin: 1.193000 | Fee: 0.1000 USDT | DCA#1 | RSI=51.8 < 55, DCA#1 | Handelsbeløp: 99.99 USDT | Min salgspris: 83.98
