@@ -1,0 +1,8 @@
+tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_usdt,gevinst_prosent,dca_level
+
+2026-04-01 22:18:03,BTCUSDT,VENTER,68209.6,0.0,0.0,0.0,"Holder 1 pos – RSI=50.7, endring=2.01%",0.0,0.0,0
+2026-04-01 22:18:03,ETHUSDT,SELG,2145.94,0.0495,106.22,0.1062,"TAKEPROFIT utløst (6.52% fra snitt 2,018.80)",6.09,6.2978,1
+2026-04-01 22:18:03,SOLUSDT,VENTER,81.34,0.0,0.0,0.0,"Holder 1 pos – RSI=28.8, endring=-1.80%",0.0,0.0,0
+2026-04-01 22:20:04,BTCUSDT,VENTER,68209.6,0.0,0.0,0.0,"Holder 1 pos – RSI=50.7, endring=2.01%",0.0,0.0,0
+2026-04-01 22:20:04,ETHUSDT,VENTER,2150.4,0.0,0.0,0.0,Ingen signal – RSI=57.8 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-01 22:20:04,SOLUSDT,VENTER,81.34,0.0,0.0,0.0,"Holder 1 pos – RSI=28.8, endring=-1.80%",0.0,0.0,0
