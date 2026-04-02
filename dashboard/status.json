@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-02 13:17:34",
+  "updated": "2026-04-02 13:24:56",
   "bot_config": {
     "active_strategy": "RSI_EMA",
     "rsi_buy": 35,
