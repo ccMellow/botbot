@@ -107,6 +107,7 @@ def write_status(states: dict[str, CoinState], client: Client) -> None:
                 "rsi_sell": s.get("rsi_sell", None),
                 "stop_loss_pct": round(trading["stop_loss_pct"] * 100, 2),
                 "take_profit_pct": round(trading["take_profit_pct"] * 100, 2),
+                "trade_usdt": trading["trade_usdt"],
                 "candle_interval": trading["candle_interval"],
             },
             "balances": balances,

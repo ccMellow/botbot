@@ -479,7 +479,7 @@ nav.nav-closed { display: none; }
 }
 
 @media (min-width: 600px) {
-  .strategy-config-grid { grid-template-columns: repeat(5, 1fr); }
+  .strategy-config-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
 .cfg-item {

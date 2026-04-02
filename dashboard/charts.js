@@ -395,6 +395,8 @@ function updateStrategyConfig(botConfig) {
   if (sl) sl.textContent = botConfig.stop_loss_pct != null ? "-" + botConfig.stop_loss_pct + "%" : "–";
   const tp = el("cfg-takeprofit");
   if (tp) tp.textContent = botConfig.take_profit_pct != null ? "+" + botConfig.take_profit_pct + "%" : "–";
+  const tu = el("cfg-trade-usdt");
+  if (tu) tu.textContent = botConfig.trade_usdt != null ? botConfig.trade_usdt + " USDT" : "–";
 }
 
 /* ===== Countdown timer ===== */
