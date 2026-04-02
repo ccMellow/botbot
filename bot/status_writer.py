@@ -101,6 +101,14 @@ def write_status(states: dict[str, CoinState], client: Client) -> None:
 
         data = {
             "updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "bot_config": {
+                "active_strategy": cfg["strategy"]["active"],
+                "rsi_buy": s.get("rsi_buy", None),
+                "rsi_sell": s.get("rsi_sell", None),
+                "stop_loss_pct": round(trading["stop_loss_pct"] * 100, 2),
+                "take_profit_pct": round(trading["take_profit_pct"] * 100, 2),
+                "candle_interval": trading["candle_interval"],
+            },
             "balances": balances,
             "positions": positions,
             "indicators": indicators,

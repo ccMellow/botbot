@@ -115,16 +115,20 @@ CSV-kolonnene er:
 
 ### Oversiktsside (standard)
 - Live pris-ticker for BTC, ETH, SOL (Binance API, oppdateres hvert 10. sekund)
+- Bot-konfigurasjonsbar: aktiv strategi, RSI kjøp/selg-terskler, stop loss %, take profit %, nedtelling til neste sjekk (fra status.json bot_config)
 - Kontosaldo for USDT, BTC, ETH, SOL (fra status.json)
 - Åpne posisjoner med snitt-inngangspris, take profit og stop loss (fra status.json)
 - Totalt sammendrag: PnL, antall handler, vinnrate, avg fee (alle mynter samlet)
+- Fear & Greed Index (alternative.me API, oppdateres hvert 30. minutt) med fargekoding
+- Siste 24 timers P&L og antall handler
 
 ### Mynt-detaljside (én per mynt)
-- Indikatorpanel: pris, RSI-gauge (0–100) med kjøp/selg-markeringslinjer, avstand til kjøpssignal, avstand til salgssignal, EMA200-status (over/under i %)
+- Indikatorpanel: pris, RSI-gauge (0–100) med kjøp/selg-markeringslinjer, avstand til kjøpssignal, avstand til salgssignal, EMA200-status (faktisk verdi + prosent over/under)
 - Statistikk (PnL, handler, vinnrate, avg fee for mynten)
 - Åpne DCA-posisjoner
-- Prisgraf
-- Logg (siste 20 beslutninger)
+- Prisgraf (klines fra Binance API, med kjøp/selg-markering)
+- RSI-historikk-graf (beregnet fra klines, med kjøp/selg-terskler som stiplede linjer)
+- Logg (siste 20 beslutninger) med "Last ned CSV"-knapp for eksport av mynt-spesifikk logg
 
 - Henter CSV og status.json fra GitHub (offentlig repo: https://github.com/ccMellow/botbot)
 - Oppdateres automatisk hvert 5. minutt
@@ -133,6 +137,14 @@ CSV-kolonnene er:
 ```json
 {
   "updated": "YYYY-MM-DD HH:MM:SS",
+  "bot_config": {
+    "active_strategy": "RSI_EMA",
+    "rsi_buy": 35,
+    "rsi_sell": 65,
+    "stop_loss_pct": 2.0,
+    "take_profit_pct": 4.0,
+    "candle_interval": "15m"
+  },
   "balances": { "USDT": 9850.0, "BTC": 0.001496, "ETH": 0.0, "SOL": 0.0 },
   "positions": {
     "BTCUSDT": {

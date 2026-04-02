@@ -470,3 +470,113 @@ nav.nav-closed { display: none; }
 
 /* ===== Pages ===== */
 .page.hidden { display: none; }
+
+/* ===== Strategy config bar ===== */
+.strategy-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .strategy-config-grid { grid-template-columns: repeat(5, 1fr); }
+}
+
+.cfg-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cfg-label {
+  font-size: 0.7rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.cfg-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* ===== Overview two-column row ===== */
+.overview-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .overview-row { grid-template-columns: 160px 1fr; align-items: start; }
+}
+
+/* ===== Fear & Greed ===== */
+.fng-section {
+  justify-content: center;
+}
+
+.fng-widget {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0;
+}
+
+.fng-value {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fng-label {
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+  font-weight: 600;
+}
+
+.fng-extreme-fear  { color: #e53e3e; }
+.fng-fear          { color: #fc8181; }
+.fng-neutral       { color: #f6e05e; }
+.fng-greed         { color: #68d391; }
+.fng-extreme-greed { color: #48bb78; }
+
+/* ===== 24h P&L grid ===== */
+.pnl24-grid {
+  grid-template-columns: repeat(2, 1fr) !important;
+}
+
+/* ===== Log header with export button ===== */
+.log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.log-header h2 { margin-bottom: 0; }
+
+.btn-export {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-export:hover { background: var(--border); color: var(--text); }
+
+/* ===== RSI chart canvas ===== */
+.rsi-canvas {
+  height: 160px !important;
+}
