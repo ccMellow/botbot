@@ -16,6 +16,8 @@ from bot.status_writer import write_status
 from bot.state_manager import save_state
 from bot.circuit_breaker import CircuitBreakerState, check_and_update
 from bot.startup_checks import run_startup_checks
+from bot.log_rotator import rotate_logs_if_needed
+from bot.performance_report import generate_weekly_report
 
 load_dotenv()
 
@@ -74,12 +76,20 @@ def hourly_push():
     push_to_github()
 
 
+def weekly_report_and_push():
+    logger.info("Genererer ukentlig ytelsesrapport...")
+    generate_weekly_report()
+    push_to_github()
+
+
 if __name__ == "__main__":
     logger.info(f"Trading-bot starter. Symboler: {', '.join(SYMBOLS)}")
 
     _startup_client = get_client()
     if not run_startup_checks(states, _startup_client, cb_state):
         raise SystemExit(1)
+
+    rotate_logs_if_needed()
 
     # Kjør umiddelbart ved oppstart
     run_strategy()
@@ -89,7 +99,11 @@ if __name__ == "__main__":
     push_interval = get_config()["system"]["github_push_interval_min"]
     schedule.every(15).minutes.do(run_strategy)
     schedule.every(push_interval).minutes.do(hourly_push)
-    logger.info(f"Planlagt: strategi hvert 15. min, GitHub-push hvert {push_interval}. min")
+    schedule.every().monday.at("08:00").do(weekly_report_and_push)
+    logger.info(
+        f"Planlagt: strategi hvert 15. min, GitHub-push hvert {push_interval}. min, "
+        f"ukentlig rapport hver mandag 08:00"
+    )
 
     while True:
         schedule.run_pending()

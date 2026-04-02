@@ -79,6 +79,7 @@ class CoinState:
         self.daily_buy_count: int = 0               # kjøp gjort i dag
         self.daily_buy_date: str = ""               # dato for siste telledag (YYYY-MM-DD)
         self.volatility_paused: bool = False        # True = kjøp pauset pga. høy volatilitet
+        self.trailing_peak_price: float = 0.0       # Høyeste pris siden posisjon ble åpnet
 
     @property
     def dca_count(self) -> int:
@@ -131,6 +132,7 @@ def fetch_candles(client: Client, symbol: str) -> pd.DataFrame:
     df["close"] = df["close"].astype(float)
     df["high"] = df["high"].astype(float)
     df["low"] = df["low"].astype(float)
+    df["volume"] = df["volume"].astype(float)
     return df
 
 
@@ -170,6 +172,15 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     # BB-bredde brukes av squeeze_filter (BOLLINGER-strategi)
     df["bb_width"] = (df["bb_upper"] - df["bb_lower"]) / df["bb_mid"]
     df["bb_width_ma"] = df["bb_width"].rolling(bb_period).mean()
+
+    # --- Volum glidende snitt (volumfilter) ---
+    df["volume_ma20"] = df["volume"].rolling(20).mean()
+
+    # --- ATR (dynamisk stoploss) ---
+    atr_period = cfg.get("trading", {}).get("atr_period", 14)
+    df["atr"] = ta.volatility.AverageTrueRange(
+        df["high"], df["low"], df["close"], window=atr_period
+    ).average_true_range()
 
     # --- MACD ---
     macd_fast = s.get("fast", s.get("macd_fast", 12))
@@ -403,6 +414,45 @@ def _check_and_reset_daily_count(state: CoinState) -> None:
         state.daily_buy_date = today
 
 
+def _volume_too_low(last, trading: dict) -> bool:
+    """Returner True hvis gjeldende volum er under minimumskravet (volumfilter)."""
+    if not trading.get("volume_filter", True):
+        return False
+    vol_raw = last.get("volume")
+    vol_ma_raw = last.get("volume_ma20")
+    if vol_raw is None or vol_ma_raw is None:
+        return False
+    if pd.isna(vol_raw) or pd.isna(vol_ma_raw) or float(vol_ma_raw) == 0:
+        return False
+    return float(vol_raw) < trading.get("volume_multiplier", 0.8) * float(vol_ma_raw)
+
+
+def _htf_confirms_buy(client: Client, symbol: str, trading: dict, s: dict) -> bool:
+    """
+    Sjekk om kjøpssignalet bekreftes på høyere tidsramme (RSI-sjekk).
+    Returnerer True = bekreftelse OK (tillat kjøp), False = ikke bekreftet.
+    Feiler åpent — hvis API-kall feiler, tillates kjøpet.
+    """
+    interval = trading.get("confirmation_timeframe", "1h")
+    period = s.get("rsi_period", 14)
+    rsi_buy = s.get("rsi_buy", 35)
+    try:
+        klines = client.get_klines(symbol=symbol, interval=interval, limit=period + 5)
+        closes = pd.Series([float(k[4]) for k in klines])
+        htf_rsi = float(
+            ta.momentum.RSIIndicator(closes, window=period).rsi().iloc[-2]
+        )
+        if htf_rsi >= rsi_buy:
+            logger.debug(
+                f"{symbol}: HTF {interval} RSI={htf_rsi:.1f} >= {rsi_buy} – ikke i kjøpssone"
+            )
+            return False
+        return True
+    except Exception as e:
+        logger.warning(f"HTF-sjekk feilet for {symbol} ({interval}): {e} – tillater kjøp")
+        return True
+
+
 def _get_usdt_balance(client: Client) -> float:
     balances = client.get_account()["balances"]
     for b in balances:
@@ -526,9 +576,42 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
         avg = state.avg_buy_price
         pct = (price - avg) / avg
 
-        if pct <= -trading["stop_loss_pct"]:
-            _sell(state, price,
-                  f"STOPLOSS utløst ({pct*100:.2f}% fra snitt {avg:,.2f})", client)
+        # Oppdater trailing peak-pris
+        if trading.get("trailing_stop_loss", False):
+            if state.trailing_peak_price == 0.0:
+                state.trailing_peak_price = price
+            else:
+                state.trailing_peak_price = max(state.trailing_peak_price, price)
+
+        # Bestem stoploss-trigger (trailing > dynamisk ATR > fast)
+        stop_triggered = False
+        stop_reason = ""
+        if trading.get("trailing_stop_loss", False) and state.trailing_peak_price > 0:
+            trail_pct = trading.get("trailing_stop_loss_pct", 1.0) / 100.0
+            trail_price = state.trailing_peak_price * (1 - trail_pct)
+            if price <= trail_price:
+                stop_triggered = True
+                stop_reason = (
+                    f"TRAILING STOPLOSS utløst (pris {price:,.2f} < "
+                    f"{trail_price:,.2f}, topp {state.trailing_peak_price:,.2f})"
+                )
+        elif trading.get("dynamic_stop_loss", False):
+            atr_raw = last.get("atr", float("nan"))
+            if not pd.isna(atr_raw) and float(atr_raw) > 0:
+                stop_dist = float(atr_raw) * trading.get("atr_multiplier", 1.5)
+                if (avg - price) >= stop_dist:
+                    stop_triggered = True
+                    stop_reason = (
+                        f"STOPLOSS (ATR) utløst – ATR={float(atr_raw):.2f} × "
+                        f"{trading['atr_multiplier']} = {stop_dist:.2f} avstand"
+                    )
+        else:
+            if pct <= -trading["stop_loss_pct"]:
+                stop_triggered = True
+                stop_reason = f"STOPLOSS utløst ({pct*100:.2f}% fra snitt {avg:,.2f})"
+
+        if stop_triggered:
+            _sell(state, price, stop_reason, client)
             return
 
         if pct >= trading["take_profit_pct"]:
@@ -564,6 +647,16 @@ def evaluate(df: pd.DataFrame, state: CoinState, client: Client) -> None:
         elif max_daily > 0 and state.daily_buy_count >= max_daily:
             log_decision("VENTER", price, symbol=symbol,
                          grunn=f"Maks daglige handler ({max_daily}) nådd for {symbol}")
+        elif _volume_too_low(last, trading):
+            vol = float(last["volume"])
+            vol_ma = float(last.get("volume_ma20") or 0)
+            log_decision("VENTER", price, symbol=symbol,
+                         grunn=(f"Volumfilter: {vol:.0f} < "
+                                f"{trading.get('volume_multiplier', 0.8)}x snitt {vol_ma:.0f}"))
+        elif trading.get("multi_timeframe", False) and not _htf_confirms_buy(client, symbol, trading, s):
+            htf = trading.get("confirmation_timeframe", "1h")
+            log_decision("VENTER", price, symbol=symbol,
+                         grunn=f"Multi-timeframe: ingen kjøpsbekreftelse på {htf}")
         else:
             usdt_balance = _get_usdt_balance(client)
             usable = usdt_balance - trading["capital_reserve"]
@@ -628,6 +721,8 @@ def _buy(
     ))
     state.daily_buy_count += 1
     state.daily_buy_date = date.today().isoformat()
+    if dca_level == 1:
+        state.trailing_peak_price = fill_price
 
 
 def _sell(state: CoinState, price: float, reason: str, client: Client) -> None:
@@ -659,6 +754,7 @@ def _sell(state: CoinState, price: float, reason: str, client: Client) -> None:
         dca_level=dca_count,
     )
     state.positions.clear()
+    state.trailing_peak_price = 0.0
 
     if "STOPLOSS" in reason:
         cooldown_min = trading["cooldown_after_stoploss_min"]

@@ -1,14 +1,19 @@
 /**
  * charts.js
- * Henter trades.csv fra GitHub, parser og oppdaterer dashboard per mynt.
+ * Henter trades.csv og status.json fra GitHub.
+ * Prisgraf og RSI-historikk hentes fra Binance klines API.
  */
 
-const CSV_URL = "https://raw.githubusercontent.com/ccMellow/botbot/main/logs/trades.csv";
+const CSV_URL    = "https://raw.githubusercontent.com/ccMellow/botbot/main/logs/trades.csv";
 const STATUS_URL = "https://raw.githubusercontent.com/ccMellow/botbot/main/dashboard/status.json";
+const KLINES_URL = "https://api.binance.com/api/v3/klines";
+const FNG_URL    = "https://api.alternative.me/fng/";
 const REFRESH_MS = 5 * 60 * 1000;
-const SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+const SYMBOLS    = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
 
-/* ===== Parsing ===== */
+let candleInterval = "15m"; // oppdateres fra bot_config
+
+/* ===== CSV Parsing ===== */
 function parseCSV(text) {
   const lines = text.trim().split("\n");
   if (lines.length < 2) return [];
@@ -36,7 +41,6 @@ function computeStats(rows) {
   return { totalPnl, winRate, tradeCount, avgFee };
 }
 
-/* ===== Totalt sammendrag ===== */
 function updateTotalStats(rows) {
   const stats = computeStats(rows);
   const pnlEl = document.getElementById("total-pnl");
@@ -49,7 +53,6 @@ function updateTotalStats(rows) {
     stats.avgFee !== "–" ? stats.avgFee + " USDT" : "–";
 }
 
-/* ===== Per-mynt stats ===== */
 function updateCoinStats(symbol, rows) {
   const stats = computeStats(rows);
   const pnlEl = document.getElementById(symbol + "-pnl");
@@ -63,17 +66,28 @@ function updateCoinStats(symbol, rows) {
     stats.avgFee !== "–" ? stats.avgFee + " USDT" : "–";
 }
 
+function update24hPnL(rows) {
+  const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+  const recent = rows.filter(r => new Date(r.tidspunkt).getTime() >= cutoff);
+  const trades = recent.filter(r => r.handling === "SELG");
+  const pnl = trades.reduce((s, r) => s + parseFloat(r.gevinst_usdt || 0), 0);
+  const count = recent.filter(r => r.handling !== "VENTER").length;
+
+  const pnlEl = document.getElementById("pnl24-total");
+  if (pnlEl) {
+    pnlEl.textContent = (pnl >= 0 ? "+" : "") + pnl.toFixed(2) + " USDT";
+    pnlEl.className = "value " + (pnl >= 0 ? "positive" : "negative");
+  }
+  const countEl = document.getElementById("pnl24-trades");
+  if (countEl) countEl.textContent = count;
+}
+
 /* ===== Åpne posisjoner (DCA) ===== */
 function updateOpenPositions(symbol, rows) {
   const el = document.getElementById(symbol + "-positions");
   if (!el) return;
-
-  // Finn KJØP-rader som ikke har fått tilhørende SELG etter seg
-  // Enklest tilnærming: tell alle KJØP minus alle SELG, vis siste N KJØP
   const buys = rows.filter(r => r.handling === "KJØP");
   const sells = rows.filter(r => r.handling === "SELG");
-
-  // Beregn antall åpne posisjoner: summer DCA-nivåer solgt vs kjøpt
   let openCount = buys.length;
   sells.forEach(s => { openCount -= parseInt(s.dca_level || 1); });
   openCount = Math.max(0, openCount);
@@ -82,8 +96,6 @@ function updateOpenPositions(symbol, rows) {
     el.innerHTML = '<p class="muted">Ingen åpne posisjoner</p>';
     return;
   }
-
-  // Vis de siste openCount kjøpene
   const openBuys = buys.slice(-openCount);
   el.innerHTML = openBuys.map(b => {
     const dca = b.dca_level || "?";
@@ -126,20 +138,66 @@ function updateTable(symbol, rows) {
   }).join("");
 }
 
-/* ===== Prisgraf ===== */
+/* ===== RSI-beregning ===== */
+function computeRSI(closes, period = 14) {
+  const rsi = new Array(closes.length).fill(null);
+  if (closes.length < period + 1) return rsi;
+  let avgGain = 0, avgLoss = 0;
+  for (let i = 1; i <= period; i++) {
+    const delta = closes[i] - closes[i - 1];
+    if (delta > 0) avgGain += delta; else avgLoss -= delta;
+  }
+  avgGain /= period;
+  avgLoss /= period;
+  rsi[period] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
+  for (let i = period + 1; i < closes.length; i++) {
+    const delta = closes[i] - closes[i - 1];
+    const gain = delta > 0 ? delta : 0;
+    const loss = delta < 0 ? -delta : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+    rsi[i] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
+  }
+  return rsi;
+}
+
+/* ===== Klines (Binance) ===== */
+async function fetchKlines(symbol, interval, limit = 120) {
+  const res = await fetch(`${KLINES_URL}?symbol=${symbol}&interval=${interval}&limit=${limit}`);
+  if (!res.ok) throw new Error(`Klines feilet for ${symbol}: ${res.statusText}`);
+  return await res.json();
+}
+
+/* ===== Prisgraf (klines-basert) ===== */
 const chartInstances = {};
 
-function updateChart(symbol, rows) {
-  const data = rows.slice(-100);
-  const labels = data.map(r => r.tidspunkt?.slice(11, 16) ?? "");
-  const prices = data.map(r => parseFloat(r.pris || 0));
-  const buyPoints = data.map(r => r.handling === "KJØP" ? parseFloat(r.pris) : null);
-  const sellPoints = data.map(r => r.handling === "SELG" ? parseFloat(r.pris) : null);
-
+function updatePriceChart(symbol, klines, tradeRows) {
   const canvas = document.getElementById("chart-" + symbol);
   if (!canvas) return;
-  const ctx = canvas.getContext("2d");
 
+  const labels  = klines.map(k => {
+    const d = new Date(k[0]);
+    return d.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit" });
+  });
+  const closes  = klines.map(k => parseFloat(k[4]));
+  const kTimes  = klines.map(k => k[0]);
+
+  const buyPoints  = new Array(klines.length).fill(null);
+  const sellPoints = new Array(klines.length).fill(null);
+
+  tradeRows.forEach(row => {
+    if (row.handling !== "KJØP" && row.handling !== "SELG") return;
+    const t = new Date(row.tidspunkt).getTime();
+    let nearest = 0, minDiff = Infinity;
+    kTimes.forEach((kt, i) => {
+      const diff = Math.abs(kt - t);
+      if (diff < minDiff) { minDiff = diff; nearest = i; }
+    });
+    if (row.handling === "KJØP")  buyPoints[nearest]  = parseFloat(row.pris);
+    else                          sellPoints[nearest] = parseFloat(row.pris);
+  });
+
+  const ctx = canvas.getContext("2d");
   if (chartInstances[symbol]) chartInstances[symbol].destroy();
 
   chartInstances[symbol] = new Chart(ctx, {
@@ -147,62 +205,81 @@ function updateChart(symbol, rows) {
     data: {
       labels,
       datasets: [
-        {
-          label: symbol.replace("USDT", "/USDT"),
-          data: prices,
-          borderColor: "#63b3ed",
-          borderWidth: 1.5,
-          pointRadius: 0,
-          tension: 0.3,
-          fill: false,
-        },
-        {
-          label: "Kjøp",
-          data: buyPoints,
-          borderColor: "transparent",
-          backgroundColor: "#48bb78",
-          pointRadius: 6,
-          pointStyle: "triangle",
-          showLine: false,
-        },
-        {
-          label: "Selg",
-          data: sellPoints,
-          borderColor: "transparent",
-          backgroundColor: "#fc8181",
-          pointRadius: 6,
-          pointStyle: "triangle",
-          pointRotation: 180,
-          showLine: false,
-        },
+        { label: symbol.replace("USDT", "/USDT"), data: closes,
+          borderColor: "#63b3ed", borderWidth: 1.5, pointRadius: 0, tension: 0.2, fill: false },
+        { label: "Kjøp",  data: buyPoints,
+          borderColor: "transparent", backgroundColor: "#48bb78",
+          pointRadius: 7, pointStyle: "triangle", showLine: false },
+        { label: "Selg",  data: sellPoints,
+          borderColor: "transparent", backgroundColor: "#fc8181",
+          pointRadius: 7, pointStyle: "triangle", pointRotation: 180, showLine: false },
       ],
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: true,
+      responsive: true, maintainAspectRatio: true,
       interaction: { mode: "index", intersect: false },
       plugins: {
         legend: { labels: { color: "#718096", font: { size: 11 } } },
         tooltip: { backgroundColor: "#1a1d27", titleColor: "#e2e8f0", bodyColor: "#a0aec0" },
       },
       scales: {
-        x: {
-          ticks: { color: "#718096", maxTicksLimit: 8 },
-          grid: { color: "#2a2d3a" },
-        },
-        y: {
-          ticks: {
-            color: "#718096",
-            callback: v => "$" + v.toLocaleString(),
-          },
-          grid: { color: "#2a2d3a" },
-        },
+        x: { ticks: { color: "#718096", maxTicksLimit: 8 }, grid: { color: "#2a2d3a" } },
+        y: { ticks: { color: "#718096", callback: v => "$" + v.toLocaleString() }, grid: { color: "#2a2d3a" } },
       },
     },
   });
 }
 
-/* ===== Status.json: saldo og åpne posisjoner ===== */
+/* ===== RSI-historikk-graf ===== */
+const rsiChartInstances = {};
+
+function updateRsiChart(symbol, klines, buyThreshold, sellThreshold) {
+  const canvas = document.getElementById("rsi-chart-" + symbol);
+  if (!canvas) return;
+
+  const closes = klines.map(k => parseFloat(k[4]));
+  const labels = klines.map(k => {
+    const d = new Date(k[0]);
+    return d.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit" });
+  });
+  const rsiValues = computeRSI(closes);
+
+  const ctx = canvas.getContext("2d");
+  if (rsiChartInstances[symbol]) rsiChartInstances[symbol].destroy();
+
+  rsiChartInstances[symbol] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels,
+      datasets: [
+        { label: "RSI", data: rsiValues,
+          borderColor: "#b794f4", borderWidth: 1.5, pointRadius: 0, tension: 0.3, fill: false },
+        { label: `Kjøp (${buyThreshold})`,
+          data: new Array(labels.length).fill(buyThreshold),
+          borderColor: "rgba(72,187,120,0.6)", borderWidth: 1.5,
+          borderDash: [5, 5], pointRadius: 0, fill: false },
+        { label: `Selg (${sellThreshold})`,
+          data: new Array(labels.length).fill(sellThreshold),
+          borderColor: "rgba(252,129,129,0.6)", borderWidth: 1.5,
+          borderDash: [5, 5], pointRadius: 0, fill: false },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { labels: { color: "#718096", font: { size: 11 } } },
+        tooltip: { backgroundColor: "#1a1d27", titleColor: "#e2e8f0", bodyColor: "#a0aec0" },
+      },
+      scales: {
+        x: { ticks: { color: "#718096", maxTicksLimit: 8 }, grid: { color: "#2a2d3a" } },
+        y: { min: 0, max: 100, ticks: { color: "#718096", stepSize: 25 }, grid: { color: "#2a2d3a" } },
+      },
+    },
+  });
+}
+
+/* ===== Status.json: saldo og posisjoner ===== */
 function updateBalances(status) {
   const bal = status.balances || {};
   ["USDT", "BTC", "ETH", "SOL"].forEach(asset => {
@@ -222,7 +299,6 @@ function updatePositionsTable(status) {
   if (!tbody) return;
   const positions = status.positions || {};
   const rows = [];
-
   SYMBOLS.forEach(symbol => {
     const pos = positions[symbol];
     if (!pos || pos.dca_count === 0) return;
@@ -237,7 +313,6 @@ function updatePositionsTable(status) {
       <td>${pos.total_usdt.toFixed(2)} USDT</td>
     </tr>`);
   });
-
   tbody.innerHTML = rows.length > 0
     ? rows.join("")
     : '<tr><td colspan="7" style="color:var(--muted)">Ingen åpne posisjoner</td></tr>';
@@ -246,37 +321,31 @@ function updatePositionsTable(status) {
 /* ===== Indikator-panel ===== */
 function updateIndicators(symbol, ind) {
   if (!ind) return;
-
-  const rsi = ind.rsi;
+  const rsi  = ind.rsi;
   const buyT = ind.rsi_buy_threshold;
   const sellT = ind.rsi_sell_threshold;
 
-  // Pris
   const priceEl = document.getElementById(symbol + "-ind-price");
   if (priceEl) priceEl.textContent =
     "$" + ind.price.toLocaleString("no-NO", { minimumFractionDigits: 2 });
 
-  // RSI verdi + farge
   const rsiEl = document.getElementById(symbol + "-ind-rsi");
   if (rsiEl) {
     rsiEl.textContent = rsi.toFixed(1);
     rsiEl.className = "ind-value " + (rsi <= buyT ? "positive" : rsi >= sellT ? "negative" : "");
   }
 
-  // RSI gauge fill
   const fill = document.getElementById(symbol + "-rsi-fill");
   if (fill) {
     fill.style.width = rsi + "%";
     fill.style.background = rsi <= buyT ? "var(--green)" : rsi >= sellT ? "var(--red)" : "var(--blue)";
   }
 
-  // Kjøp/selg-markeringslinjer
   const buyLine = document.getElementById(symbol + "-rsi-buy-line");
   if (buyLine) buyLine.style.left = buyT + "%";
   const sellLine = document.getElementById(symbol + "-rsi-sell-line");
   if (sellLine) sellLine.style.left = sellT + "%";
 
-  // Til kjøp
   const toBuyEl = document.getElementById(symbol + "-ind-to-buy");
   if (toBuyEl) {
     if (ind.rsi_to_buy <= 0) {
@@ -288,7 +357,6 @@ function updateIndicators(symbol, ind) {
     }
   }
 
-  // Til salg
   const toSellEl = document.getElementById(symbol + "-ind-to-sell");
   if (toSellEl) {
     if (ind.rsi_to_sell <= 0) {
@@ -300,48 +368,181 @@ function updateIndicators(symbol, ind) {
     }
   }
 
-  // EMA200
+  // EMA200: vis faktisk pris og prosent
   const emaEl = document.getElementById(symbol + "-ind-ema200");
-  if (emaEl) {
+  if (emaEl && ind.ema200 != null) {
     const pct = Math.abs(ind.price_vs_ema200_pct).toFixed(2);
+    const emaPrice = "$" + ind.ema200.toLocaleString("no-NO", { minimumFractionDigits: 2 });
     if (ind.price_above_ema200) {
-      emaEl.textContent = "▲ +" + pct + "% over";
+      emaEl.textContent = emaPrice + " ▲ +" + pct + "% over";
       emaEl.className = "ind-value positive";
     } else {
-      emaEl.textContent = "▼ " + pct + "% under";
+      emaEl.textContent = emaPrice + " ▼ " + pct + "% under";
       emaEl.className = "ind-value negative";
     }
   }
+}
+
+/* ===== Strategy config panel ===== */
+function updateStrategyConfig(botConfig) {
+  if (!botConfig) return;
+  const el = id => document.getElementById(id);
+  const strategy = el("cfg-strategy");
+  if (strategy) strategy.textContent = botConfig.active_strategy || "–";
+  const rsi = el("cfg-rsi");
+  if (rsi) rsi.textContent = (botConfig.rsi_buy ?? "–") + " / " + (botConfig.rsi_sell ?? "–");
+  const sl = el("cfg-stoploss");
+  if (sl) sl.textContent = botConfig.stop_loss_pct != null ? "-" + botConfig.stop_loss_pct + "%" : "–";
+  const tp = el("cfg-takeprofit");
+  if (tp) tp.textContent = botConfig.take_profit_pct != null ? "+" + botConfig.take_profit_pct + "%" : "–";
+}
+
+/* ===== Countdown timer ===== */
+let countdownInterval = null;
+
+function parseIntervalMinutes(str) {
+  if (!str) return null;
+  const m = str.match(/^(\d+)([mh])$/);
+  if (!m) return null;
+  return m[2] === "h" ? parseInt(m[1]) * 60 : parseInt(m[1]);
+}
+
+function startCountdown(updatedStr, intervalStr) {
+  if (countdownInterval) clearInterval(countdownInterval);
+  const mins = parseIntervalMinutes(intervalStr);
+  if (!mins) return;
+  const updated = new Date(updatedStr.replace(" ", "T")).getTime();
+  const nextRun = updated + mins * 60 * 1000;
+
+  function tick() {
+    const el = document.getElementById("cfg-countdown");
+    if (!el) return;
+    const remaining = Math.max(0, nextRun - Date.now());
+    if (remaining === 0) {
+      el.textContent = "Snart...";
+      el.className = "cfg-value positive";
+    } else {
+      const m = Math.floor(remaining / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      el.textContent = m + "m " + s.toString().padStart(2, "0") + "s";
+      el.className = "cfg-value";
+    }
+  }
+  tick();
+  countdownInterval = setInterval(tick, 1000);
+}
+
+/* ===== Fear & Greed Index ===== */
+async function fetchFearAndGreed() {
+  try {
+    const res = await fetch(FNG_URL);
+    if (!res.ok) return;
+    const data = await res.json();
+    const entry = data?.data?.[0];
+    if (!entry) return;
+    const value = parseInt(entry.value);
+    const label = entry.value_classification;
+
+    const valEl = document.getElementById("fng-value");
+    const lblEl = document.getElementById("fng-label");
+    if (valEl) {
+      valEl.textContent = value;
+      if      (value <= 25) valEl.className = "fng-value fng-extreme-fear";
+      else if (value <= 45) valEl.className = "fng-value fng-fear";
+      else if (value <= 55) valEl.className = "fng-value fng-neutral";
+      else if (value <= 75) valEl.className = "fng-value fng-greed";
+      else                  valEl.className = "fng-value fng-extreme-greed";
+    }
+    if (lblEl) lblEl.textContent = label;
+  } catch (err) {
+    console.error("Fear & Greed feil:", err);
+  }
+}
+
+/* ===== Export CSV ===== */
+function setupExportButtons() {
+  SYMBOLS.forEach(symbol => {
+    const btn = document.getElementById("export-" + symbol);
+    if (!btn) return;
+    btn.addEventListener("click", async () => {
+      try {
+        const res = await fetch(CSV_URL + "?t=" + Date.now());
+        if (!res.ok) throw new Error(res.statusText);
+        const text = await res.text();
+        const lines = text.trim().split("\n");
+        const header = lines[0];
+        const filtered = lines.slice(1).filter(l => {
+          const cols = l.split(",");
+          return cols[1]?.trim() === symbol;
+        });
+        const csvContent = [header, ...filtered].join("\n");
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.href = url;
+        a.download = `trades_${symbol}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("CSV-eksport feilet:", err);
+      }
+    });
+  });
 }
 
 /* ===== Hoved-refresh ===== */
 async function refresh() {
   try {
     const bust = "?t=" + Date.now();
-    const [csvRes, statusRes] = await Promise.all([
+
+    const [csvRes, statusRes, ...klineResults] = await Promise.all([
       fetch(CSV_URL + bust),
       fetch(STATUS_URL + bust),
+      ...SYMBOLS.map(s => fetchKlines(s, candleInterval).catch(() => null)),
     ]);
 
-    if (!csvRes.ok) throw new Error("CSV: " + csvRes.statusText);
-    const text = await csvRes.text();
-    const rows = parseCSV(text);
+    const [csvText, statusData] = await Promise.all([
+      csvRes.ok ? csvRes.text() : Promise.resolve(""),
+      statusRes.ok ? statusRes.json() : Promise.resolve(null),
+    ]);
+
+    const rows = csvText ? parseCSV(csvText) : [];
 
     updateTotalStats(rows);
+    update24hPnL(rows);
+
+    const klinesBySymbol = {};
+    SYMBOLS.forEach((s, i) => { klinesBySymbol[s] = klineResults[i]; });
+
     SYMBOLS.forEach(symbol => {
       const coinRows = filterByCoin(rows, symbol);
+      const ind      = statusData?.indicators?.[symbol];
+      const buyT     = ind?.rsi_buy_threshold  ?? 35;
+      const sellT    = ind?.rsi_sell_threshold ?? 65;
+
       updateCoinStats(symbol, coinRows);
       updateOpenPositions(symbol, coinRows);
       updateTable(symbol, coinRows);
-      updateChart(symbol, coinRows);
+
+      const klines = klinesBySymbol[symbol];
+      if (klines && klines.length > 0) {
+        updatePriceChart(symbol, klines, coinRows);
+        updateRsiChart(symbol, klines, buyT, sellT);
+      }
     });
 
-    if (statusRes.ok) {
-      const status = await statusRes.json();
-      updateBalances(status);
-      updatePositionsTable(status);
-      if (status.indicators) {
-        SYMBOLS.forEach(symbol => updateIndicators(symbol, status.indicators[symbol]));
+    if (statusData) {
+      updateBalances(statusData);
+      updatePositionsTable(statusData);
+      if (statusData.indicators) {
+        SYMBOLS.forEach(s => updateIndicators(s, statusData.indicators[s]));
+      }
+      if (statusData.bot_config) {
+        updateStrategyConfig(statusData.bot_config);
+        startCountdown(statusData.updated, statusData.bot_config.candle_interval);
+        if (statusData.bot_config.candle_interval) {
+          candleInterval = statusData.bot_config.candle_interval;
+        }
       }
     }
 
@@ -353,9 +554,6 @@ async function refresh() {
     console.error(err);
   }
 }
-
-refresh();
-setInterval(refresh, REFRESH_MS);
 
 /* ===== Navigation ===== */
 function showPage(pageId) {
@@ -380,7 +578,7 @@ showPage('overview');
 
 /* ===== Live pris-ticker ===== */
 const TICKER_SYMBOLS = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
-const TICKER_MS = 10 * 1000;
+const TICKER_MS      = 10 * 1000;
 
 async function refreshTicker() {
   try {
@@ -397,12 +595,18 @@ async function refreshTicker() {
         "$" + parseFloat(t.lastPrice).toLocaleString("no-NO", { minimumFractionDigits: 2 });
       const changeEl = el.querySelector(".ticker-change");
       changeEl.textContent = (pct >= 0 ? "+" : "") + pct.toFixed(2) + "%";
-      changeEl.className = "ticker-change " + (pct >= 0 ? "positive" : "negative");
+      changeEl.className   = "ticker-change " + (pct >= 0 ? "positive" : "negative");
     });
   } catch (err) {
     console.error("Ticker-feil:", err);
   }
 }
 
+/* ===== Init ===== */
+refresh();
+setInterval(refresh, REFRESH_MS);
 refreshTicker();
 setInterval(refreshTicker, TICKER_MS);
+fetchFearAndGreed();
+setInterval(fetchFearAndGreed, 30 * 60 * 1000);
+setupExportButtons();

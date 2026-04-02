@@ -46,6 +46,33 @@
         </div>
       </section>
 
+      <!-- Strategy config + countdown -->
+      <section class="status-section strategy-bar">
+        <h2 class="section-title">Bot-konfigurasjon</h2>
+        <div class="strategy-config-grid">
+          <div class="cfg-item">
+            <span class="cfg-label">Strategi</span>
+            <span class="cfg-value" id="cfg-strategy">–</span>
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">RSI Kjøp / Selg</span>
+            <span class="cfg-value" id="cfg-rsi">–</span>
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">Stop loss</span>
+            <span class="cfg-value" id="cfg-stoploss">–</span>
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">Take profit</span>
+            <span class="cfg-value" id="cfg-takeprofit">–</span>
+          </div>
+          <div class="cfg-item">
+            <span class="cfg-label">Neste sjekk om</span>
+            <span class="cfg-value" id="cfg-countdown">–</span>
+          </div>
+        </div>
+      </section>
+
       <!-- Kontosaldo -->
       <section class="status-section">
         <h2 class="section-title">Kontosaldo (Testnet)</h2>
@@ -113,6 +140,30 @@
         </div>
       </section>
 
+      <!-- Fear & Greed + 24h P&L -->
+      <div class="overview-row">
+        <section class="status-section fng-section">
+          <h2 class="section-title">Fear &amp; Greed Index</h2>
+          <div class="fng-widget">
+            <div class="fng-value" id="fng-value">–</div>
+            <div class="fng-label" id="fng-label">Laster...</div>
+          </div>
+        </section>
+        <section class="status-section">
+          <h2 class="section-title">Siste 24 timer</h2>
+          <div class="stats-grid pnl24-grid">
+            <div class="card">
+              <span class="label">P&amp;L siste 24t</span>
+              <span class="value" id="pnl24-total">–</span>
+            </div>
+            <div class="card">
+              <span class="label">Handler siste 24t</span>
+              <span class="value" id="pnl24-trades">–</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
     </section><!-- #page-overview -->
 
 
@@ -177,8 +228,15 @@
           <h2>Prisgraf</h2>
           <canvas id="chart-BTCUSDT"></canvas>
         </div>
+        <div class="chart-section">
+          <h2>RSI-historikk</h2>
+          <canvas id="rsi-chart-BTCUSDT" class="rsi-canvas"></canvas>
+        </div>
         <div class="log-section">
-          <h2>Siste beslutninger</h2>
+          <div class="log-header">
+            <h2>Siste beslutninger</h2>
+            <button class="btn-export" id="export-BTCUSDT">&#8659; Last ned CSV</button>
+          </div>
           <div class="table-wrapper">
             <table>
               <thead>
@@ -255,8 +313,15 @@
           <h2>Prisgraf</h2>
           <canvas id="chart-ETHUSDT"></canvas>
         </div>
+        <div class="chart-section">
+          <h2>RSI-historikk</h2>
+          <canvas id="rsi-chart-ETHUSDT" class="rsi-canvas"></canvas>
+        </div>
         <div class="log-section">
-          <h2>Siste beslutninger</h2>
+          <div class="log-header">
+            <h2>Siste beslutninger</h2>
+            <button class="btn-export" id="export-ETHUSDT">&#8659; Last ned CSV</button>
+          </div>
           <div class="table-wrapper">
             <table>
               <thead>
@@ -333,8 +398,15 @@
           <h2>Prisgraf</h2>
           <canvas id="chart-SOLUSDT"></canvas>
         </div>
+        <div class="chart-section">
+          <h2>RSI-historikk</h2>
+          <canvas id="rsi-chart-SOLUSDT" class="rsi-canvas"></canvas>
+        </div>
         <div class="log-section">
-          <h2>Siste beslutninger</h2>
+          <div class="log-header">
+            <h2>Siste beslutninger</h2>
+            <button class="btn-export" id="export-SOLUSDT">&#8659; Last ned CSV</button>
+          </div>
           <div class="table-wrapper">
             <table>
               <thead>
