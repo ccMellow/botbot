@@ -38,6 +38,8 @@ Skal eventuelt flyttes til live Binance når testing er fullført.
 - bot/startup_checks.py  → oppstartskontroller og config-validering
 - bot/state_manager.py   → lagrer/gjenoppretter CoinState til/fra state.json
 - bot/status_writer.py   → skriver dashboard/status.json med posisjoner og saldo
+- bot/log_rotator.py     → månedlig log-rotasjon til logs/archive/, beholder 3 måneder
+- bot/performance_report.py → ukentlig ytelsesrapport (hver mandag 08:00) til logs/performance_report.txt
 - dashboard/index.html   → hovedside (mobiloptimalisert)
 - dashboard/style.css    → styling
 - dashboard/charts.js    → grafer, visualisering og status.json-lesing
@@ -79,6 +81,12 @@ Alle parametre og valg av aktiv strategi gjøres i `config.yaml`. Start boten p�
 - volatility_pause: hvis aktivert, pauses kjøp for en mynt dersom siste lysestake endret seg mer enn `volatility_threshold`% (åpning til lukking). Nullstilles neste syklus om volatilitet normaliseres
 - squeeze_filter (BOLLINGER): kjøp kun etter BB-squeeze, dvs. BB-bredde var under glidende snitt forrige lys og ekspanderer nå
 - confirmation_candles (MA_CROSS): crossover må holde i N lys før kjøp bekreftes (1 = standard oppførsel)
+- trailing_stop_loss: stoploss følger prisen oppover automatisk; utløses når pris faller `trailing_stop_loss_pct`% fra toppkurs. Lagres i state.json
+- volume_filter: kjøp kun når volum er over `volume_multiplier`x 20-lys gjennomsnittlig volum
+- dynamic_stop_loss: ATR-basert stoploss (ATR × atr_multiplier = stoploss-avstand fra snitt-inngangspris) i stedet for fast stop_loss_pct
+- multi_timeframe: krev at RSI er under kjøpsterskelen på `confirmation_timeframe` (f.eks. 1h) i tillegg til hovedintervallet før kjøp
+- log_rotator: arkiverer trades.csv og trades.log månedlig til logs/archive/, beholder siste 3 måneder
+- performance_report: genererer ukentlig rapport (mandag 08:00) med P&L, vinnrate, holdetid per mynt, beste/dårligste handel. Pushes til GitHub
 
 ### Krav til alle strategier
 - Må inkludere fee-kalkulator før hver handel

@@ -44,6 +44,15 @@ trading:
   cooldown_after_stoploss_min: 30   # Ventetid i minutter etter stoploss før ny kjøpsordre
   candle_interval: "15m"            # Lysestake-intervall: 1m 3m 5m 15m 30m 1h 4h 1d
   candle_limit: 250                 # Antall lysestaker å hente (må dekke lengste indikatorperiode)
+  trailing_stop_loss: false         # true = trailing stoploss (følger prisen oppover)
+  trailing_stop_loss_pct: 1.0       # % fra toppkurs som utløser trailing stoploss
+  volume_filter: true               # true = krev at volum > volume_multiplier × 20-lys snitt
+  volume_multiplier: 0.8            # Minimumsvolum = denne × 20-lys gjennomsnittlig volum
+  dynamic_stop_loss: false          # true = ATR-basert dynamisk stoploss (overstyrer stop_loss_pct)
+  atr_period: 14                    # ATR-beregningsperiode (brukes hvis dynamic_stop_loss=true)
+  atr_multiplier: 1.5               # ATR × denne = stoploss-avstand fra snitt-inngangspris
+  multi_timeframe: false            # true = krev RSI-bekreftelse på høyere tidsramme før kjøp
+  confirmation_timeframe: "1h"      # Høyere tidsramme for bekreftelse (brukes hvis multi_timeframe=true)
 
 # =============================================================================
 # Strategi-parametre — kun den aktive strategien brukes

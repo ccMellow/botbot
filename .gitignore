@@ -34,3 +34,7 @@ Thumbs.db
 # Loggfiler kan bli store – valgfritt å pushe
 # logs/*.csv
 # logs/*.log
+
+# Log-rotasjon (lokal runtime-markør og arkiv)
+logs/archive/
+logs/.rotation_month
