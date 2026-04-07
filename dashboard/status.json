@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-07 12:33:57",
+  "updated": "2026-04-07 13:04:02",
   "bot_config": {
     "active_strategy": "RSI_EMA",
     "rsi_buy": 35,
@@ -11,8 +11,8 @@
   },
   "balances": {
     "BTC": 0.99852,
-    "USDT": 10198.825876,
-    "ETH": 0.9975,
+    "USDT": 10296.527596,
+    "ETH": 0.9505,
     "SOL": 3.807
   },
   "positions": {
@@ -21,20 +21,8 @@
       "entries": []
     },
     "ETHUSDT": {
-      "dca_count": 1,
-      "avg_entry_price": 2125.01,
-      "take_profit_price": 2210.0104,
-      "stop_loss_price": 2082.5098,
-      "total_coin": 0.047,
-      "total_usdt": 99.88,
-      "entries": [
-        {
-          "dca_level": 1,
-          "entry_price": 2125.01,
-          "coin_amount": 0.047,
-          "usdt_amount": 99.88
-        }
-      ]
+      "dca_count": 0,
+      "entries": []
     },
     "SOLUSDT": {
       "dca_count": 0,
@@ -43,39 +31,39 @@
   },
   "indicators": {
     "BTCUSDT": {
-      "price": 68400.33,
-      "rsi": 41.99,
-      "ema200": 68651.038,
+      "price": 68382.02,
+      "rsi": 42.72,
+      "ema200": 68642.2975,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 6.99,
-      "rsi_to_sell": 23.01,
+      "rsi_to_buy": 7.72,
+      "rsi_to_sell": 22.28,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -0.37,
+      "price_vs_ema200_pct": -0.38,
       "active_strategy": "RSI_EMA"
     },
     "ETHUSDT": {
-      "price": 2084.15,
-      "rsi": 31.98,
-      "ema200": 2107.8767,
+      "price": 2086.76,
+      "rsi": 39.73,
+      "ema200": 2107.1659,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": -3.02,
-      "rsi_to_sell": 33.02,
+      "rsi_to_buy": 4.73,
+      "rsi_to_sell": 25.27,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -1.13,
+      "price_vs_ema200_pct": -0.97,
       "active_strategy": "RSI_EMA"
     },
     "SOLUSDT": {
-      "price": 79.09,
-      "rsi": 31.84,
-      "ema200": 80.6685,
+      "price": 79.11,
+      "rsi": 36.19,
+      "ema200": 80.6407,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": -3.16,
-      "rsi_to_sell": 33.16,
+      "rsi_to_buy": 1.19,
+      "rsi_to_sell": 28.81,
       "price_above_ema200": false,
-      "price_vs_ema200_pct": -1.96,
+      "price_vs_ema200_pct": -1.9,
       "active_strategy": "RSI_EMA"
     }
   }
