@@ -1935,3 +1935,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-04-08 15:09:10,BTCUSDT,VENTER,70869.91,0.0,0.0,0.0,Volumfilter: 17 < 0.8x snitt 36,0.0,0.0,0
 2026-04-08 15:09:11,ETHUSDT,KJØP,2199.69,0.0454,99.87,0.0999,"RSI=24.6 < 35, pris 2,193.96 > EMA200 2,176.51 | DCA#2 | 99.87 USDT | Min salgspris: 2,204.09",0.0,0.0,2
 2026-04-08 15:09:12,SOLUSDT,KJØP,82.93,1.205,99.93,0.0999,"RSI=24.8 < 35, pris 82.89 > EMA200 82.65 | DCA#3 | 99.93 USDT | Min salgspris: 83.10",0.0,0.0,3
+2026-04-08 15:24:15,BTCUSDT,VENTER,71097.85,0.0,0.0,0.0,Ingen signal – RSI=39.3 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-08 15:24:16,ETHUSDT,KJØP,2208.69,0.0452,99.83,0.0998,"RSI=32.9 < 35, pris 2,204.90 > EMA200 2,176.44 | DCA#3 | 99.83 USDT | Min salgspris: 2,213.11",0.0,0.0,3
+2026-04-08 15:24:16,SOLUSDT,VENTER,83.03,0.0,0.0,0.0,Maks DCA (3) nådd – ingen ny kjøpsordre,0.0,0.0,0
+2026-04-08 15:39:18,BTCUSDT,VENTER,71176.0,0.0,0.0,0.0,Ingen signal – RSI=41.3 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-08 15:39:18,ETHUSDT,VENTER,2206.55,0.0,0.0,0.0,Maks DCA (3) nådd – ingen ny kjøpsordre,0.0,0.0,0
+2026-04-08 15:39:18,SOLUSDT,VENTER,83.15,0.0,0.0,0.0,Maks DCA (3) nådd – ingen ny kjøpsordre,0.0,0.0,0
