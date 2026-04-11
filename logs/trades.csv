@@ -2685,3 +2685,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-04-11 05:51:35,BTCUSDT,VENTER,72815.89,0.0,0.0,0.0,Ingen signal – RSI=45.8 (aktiv: RSI_EMA),0.0,0.0,0
 2026-04-11 05:51:35,ETHUSDT,VENTER,2235.85,0.0,0.0,0.0,Ingen signal – RSI=49.6 (aktiv: RSI_EMA),0.0,0.0,0
 2026-04-11 05:51:35,SOLUSDT,VENTER,84.25,0.0,0.0,0.0,"Holder 1 pos – RSI=37.0, endring=0.04%",0.0,0.0,0
+2026-04-11 06:06:38,BTCUSDT,VENTER,72721.59,0.0,0.0,0.0,Ingen signal – RSI=40.8 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-11 06:06:38,ETHUSDT,VENTER,2232.84,0.0,0.0,0.0,Ingen signal – RSI=48.6 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-11 06:06:39,SOLUSDT,KJØP,83.94,1.191,99.97,0.1,"RSI=32.7 < 35, pris 84.09 > EMA200 83.96 | DCA#2 | 99.97 USDT | Min salgspris: 84.11",0.0,0.0,2
+2026-04-11 06:21:41,BTCUSDT,VENTER,72677.36,0.0,0.0,0.0,Ingen signal – RSI=38.7 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-11 06:21:41,ETHUSDT,VENTER,2231.2,0.0,0.0,0.0,Ingen signal – RSI=48.1 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-11 06:21:43,SOLUSDT,KJØP,84.04,1.189,99.92,0.0999,"RSI=30.8 < 35, pris 84.01 > EMA200 83.95 | DCA#3 | 99.92 USDT | Min salgspris: 84.21",0.0,0.0,3

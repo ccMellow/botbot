@@ -2684,3 +2684,9 @@
 [2026-04-11 05:51:35] VENTER | BTCUSDT | Pris: 72,815.89 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=45.8 (aktiv: RSI_EMA)
 [2026-04-11 05:51:35] VENTER | ETHUSDT | Pris: 2,235.85 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=49.6 (aktiv: RSI_EMA)
 [2026-04-11 05:51:35] VENTER | SOLUSDT | Pris: 84.25 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 1 pos – RSI=37.0, endring=0.04%
+[2026-04-11 06:06:38] VENTER | BTCUSDT | Pris: 72,721.59 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=40.8 (aktiv: RSI_EMA)
+[2026-04-11 06:06:38] VENTER | ETHUSDT | Pris: 2,232.84 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=48.6 (aktiv: RSI_EMA)
+[2026-04-11 06:06:39] KJØP   | SOLUSDT | Pris: 83.94 USDT | Coin: 1.191000 | Fee: 0.1000 USDT | DCA#2 | RSI=32.7 < 35, pris 84.09 > EMA200 83.96 | DCA#2 | 99.97 USDT | Min salgspris: 84.11
+[2026-04-11 06:21:41] VENTER | BTCUSDT | Pris: 72,677.36 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=38.7 (aktiv: RSI_EMA)
+[2026-04-11 06:21:41] VENTER | ETHUSDT | Pris: 2,231.20 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=48.1 (aktiv: RSI_EMA)
+[2026-04-11 06:21:43] KJØP   | SOLUSDT | Pris: 84.04 USDT | Coin: 1.189000 | Fee: 0.0999 USDT | DCA#3 | RSI=30.8 < 35, pris 84.01 > EMA200 83.95 | DCA#3 | 99.92 USDT | Min salgspris: 84.21
