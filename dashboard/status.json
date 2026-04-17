@@ -1,5 +1,5 @@
 {
-  "updated": "2026-04-17 18:56:06",
+  "updated": "2026-04-17 19:26:13",
   "bot_config": {
     "active_strategy": "RSI_EMA",
     "rsi_buy": 35,
@@ -31,39 +31,39 @@
   },
   "indicators": {
     "BTCUSDT": {
-      "price": 77374.66,
-      "rsi": 54.46,
-      "ema200": 75363.0467,
+      "price": 77215.67,
+      "rsi": 51.45,
+      "ema200": 75390.2069,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 19.46,
-      "rsi_to_sell": 10.54,
+      "rsi_to_buy": 16.45,
+      "rsi_to_sell": 13.55,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 2.67,
+      "price_vs_ema200_pct": 2.42,
       "active_strategy": "RSI_EMA"
     },
     "ETHUSDT": {
-      "price": 2429.61,
-      "rsi": 54.81,
-      "ema200": 2359.7659,
+      "price": 2423.52,
+      "rsi": 51.75,
+      "ema200": 2360.9728,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 19.81,
-      "rsi_to_sell": 10.19,
+      "rsi_to_buy": 16.75,
+      "rsi_to_sell": 13.25,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 2.96,
+      "price_vs_ema200_pct": 2.65,
       "active_strategy": "RSI_EMA"
     },
     "SOLUSDT": {
-      "price": 89.36,
-      "rsi": 49.14,
-      "ema200": 87.2848,
+      "price": 89.17,
+      "rsi": 46.57,
+      "ema200": 87.3247,
       "rsi_buy_threshold": 35,
       "rsi_sell_threshold": 65,
-      "rsi_to_buy": 14.14,
-      "rsi_to_sell": 15.86,
+      "rsi_to_buy": 11.57,
+      "rsi_to_sell": 18.43,
       "price_above_ema200": true,
-      "price_vs_ema200_pct": 2.38,
+      "price_vs_ema200_pct": 2.11,
       "active_strategy": "RSI_EMA"
     }
   }
