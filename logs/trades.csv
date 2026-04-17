@@ -4341,3 +4341,9 @@ tidspunkt,symbol,handling,pris,mengde_coin,beløp_usdt,fee_usdt,grunn,gevinst_us
 2026-04-17 00:21:39,BTCUSDT,VENTER,74976.01,0.0,0.0,0.0,Ingen signal – RSI=52.3 (aktiv: RSI_EMA),0.0,0.0,0
 2026-04-17 00:21:39,ETHUSDT,VENTER,2343.29,0.0,0.0,0.0,Ingen signal – RSI=50.1 (aktiv: RSI_EMA),0.0,0.0,0
 2026-04-17 00:21:39,SOLUSDT,VENTER,88.76,0.0,0.0,0.0,Ingen signal – RSI=54.0 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:36:41,BTCUSDT,VENTER,74996.66,0.0,0.0,0.0,Ingen signal – RSI=53.0 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:36:41,ETHUSDT,VENTER,2345.81,0.0,0.0,0.0,Ingen signal – RSI=52.2 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:36:41,SOLUSDT,VENTER,88.68,0.0,0.0,0.0,Ingen signal – RSI=52.4 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:51:44,BTCUSDT,VENTER,74959.25,0.0,0.0,0.0,Ingen signal – RSI=51.6 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:51:44,ETHUSDT,VENTER,2345.81,0.0,0.0,0.0,Ingen signal – RSI=52.2 (aktiv: RSI_EMA),0.0,0.0,0
+2026-04-17 00:51:44,SOLUSDT,VENTER,88.75,0.0,0.0,0.0,Ingen signal – RSI=53.7 (aktiv: RSI_EMA),0.0,0.0,0
