@@ -4934,3 +4934,9 @@
 [2026-04-19 02:03:41] VENTER | BTCUSDT | Pris: 75,621.95 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 pos – RSI=43.6, endring=-1.28%
 [2026-04-19 02:03:41] VENTER | ETHUSDT | Pris: 2,347.72 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 pos – RSI=43.6, endring=-1.74%
 [2026-04-19 02:03:41] VENTER | SOLUSDT | Pris: 85.76 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=35.8 (aktiv: RSI_EMA)
+[2026-04-19 02:18:46] VENTER | BTCUSDT | Pris: 75,634.85 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 pos – RSI=44.5, endring=-1.26%
+[2026-04-19 02:18:46] VENTER | ETHUSDT | Pris: 2,345.72 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 pos – RSI=40.7, endring=-1.82%
+[2026-04-19 02:18:46] VENTER | SOLUSDT | Pris: 85.78 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=36.8 (aktiv: RSI_EMA)
+[2026-04-19 02:33:49] VENTER | BTCUSDT | Pris: 75,477.50 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Holder 3 pos – RSI=36.7, endring=-1.47%
+[2026-04-19 02:33:49] SELG   | ETHUSDT | Pris: 2,338.33 USDT | Coin: 0.125400 | Fee: 0.2932 USDT | DCA#3 | STOPLOSS utløst (-2.16% fra snitt 2,389.26) | Resultat: -6.98 USDT (-2.131%)
+[2026-04-19 02:33:49] VENTER | SOLUSDT | Pris: 85.33 USDT | Coin: 0.000000 | Fee: 0.0000 USDT | Ingen signal – RSI=26.8 (aktiv: RSI_EMA)
