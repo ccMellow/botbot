@@ -1,21 +1,21 @@
 ==============================================================
   UKENTLIG YTELSESRAPPORT
 ==============================================================
-  Generert:  2026-04-13 08:00:03
-  Periode:   2026-04-06 – 2026-04-13
+  Generert:  2026-04-20 08:00:26
+  Periode:   2026-04-13 – 2026-04-20
 
 TOTAL YTELSE
-  P&L siste 7 dager:    +3.45 USDT
-  Antall salg:          7
-  Samlet vinnrate:      71.4%
-  Totale fees betalt:   2.9991 USDT
+  P&L siste 7 dager:    -17.30 USDT
+  Antall salg:          5
+  Samlet vinnrate:      20.0%
+  Totale fees betalt:   2.3797 USDT
 
 PER MYNT
-  BTCUSDT       P&L: +3.03 USDT        Salg:   2  Vinnrate: 100.0%  Gj.snitt holdetid: 8t 16m
-  ETHUSDT       P&L: -0.88 USDT        Salg:   2  Vinnrate:  50.0%  Gj.snitt holdetid: 22t 19m
-  SOLUSDT       P&L: +1.30 USDT        Salg:   3  Vinnrate:  66.7%  Gj.snitt holdetid: 14t 47m
+  BTCUSDT       P&L: -6.61 USDT        Salg:   1  Vinnrate:   0.0%  Gj.snitt holdetid: 23t 5m
+  ETHUSDT       P&L: -5.04 USDT        Salg:   2  Vinnrate:  50.0%  Gj.snitt holdetid: 25t 13m
+  SOLUSDT       P&L: -5.65 USDT        Salg:   2  Vinnrate:   0.0%  Gj.snitt holdetid: 17t 11m
 
-BESTE HANDEL:      SOLUSDT  +2.13 USDT (0.91%)  2026-04-09 15:59:18
-DÅRLIGSTE HANDEL:  ETHUSDT  -2.37 USDT (-2.18%)  2026-04-07 12:48:59
+BESTE HANDEL:      ETHUSDT  +1.94 USDT (0.85%)  2026-04-15 19:29:38
+DÅRLIGSTE HANDEL:  ETHUSDT  -6.98 USDT (-2.13%)  2026-04-19 02:33:49
 
 ==============================================================
